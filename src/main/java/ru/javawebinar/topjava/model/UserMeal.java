@@ -26,4 +26,11 @@ public class UserMeal {
     public int getCalories() {
         return calories;
     }
+
+    public UserMealWithExcess toUserMealWithExcess(boolean isExcess) {
+        return new UserMealWithExcess(this.dateTime,
+                this.description,
+                this.calories,
+                isExcess);
+    }
 }
