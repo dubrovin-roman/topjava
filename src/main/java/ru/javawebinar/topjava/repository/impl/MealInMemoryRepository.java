@@ -1,19 +1,19 @@
-package ru.javawebinar.topjava.repository;
+package ru.javawebinar.topjava.repository.impl;
 
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.MealTo;
-import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.repository.MealRepository;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.Month;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
-public class MealInMemoryRepository {
+public class MealInMemoryRepository implements MealRepository {
     private static MealInMemoryRepository mealInMemoryRepository;
-    private final List<Meal> mealList = new ArrayList<>();
-    private final static int CALORIES_PER_DAY = 2000;
+    private final CopyOnWriteArrayList<Meal> mealList = new CopyOnWriteArrayList<>();
+    private static final AtomicInteger counterId = new AtomicInteger(1);
 
     private MealInMemoryRepository() {
         List<Meal> meals = Arrays.asList(
@@ -26,7 +26,7 @@ public class MealInMemoryRepository {
                 new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410)
         );
 
-        meals.forEach(this::saveMeal);
+        meals.forEach(this::save);
     }
 
     public static MealInMemoryRepository getInstance() {
@@ -36,24 +36,20 @@ public class MealInMemoryRepository {
         return mealInMemoryRepository;
     }
 
+    @Override
     public List<Meal> findAll() {
         return Collections.unmodifiableList(this.mealList);
     }
 
-    public List<MealTo> findAllMealTo() {
-        return MealsUtil.filteredByStreams(findAll(),
-                LocalTime.of(0, 0),
-                LocalTime.of(23, 59),
-                CALORIES_PER_DAY);
-    }
-
+    @Override
     public Meal findById(int id) {
         return this.mealList.get(getIndexMealInListById(id));
     }
 
-    public void saveMeal(Meal meal) {
+    @Override
+    public void save(Meal meal) {
         if (meal.getId() == 0) {
-            int newId = getLastIdMealInList() + 1;
+            int newId = counterId.getAndIncrement();
             meal.setId(newId);
             this.mealList.add(meal);
         } else {
@@ -64,6 +60,11 @@ public class MealInMemoryRepository {
         }
     }
 
+    @Override
+    public void deleteById(int mealId) {
+        this.mealList.remove(getIndexMealInListById(mealId));
+    }
+
     private int getIndexMealInListById(int mealId) {
         int index = -1;
         for (int i = 0; i < this.mealList.size(); i++) {
@@ -71,17 +72,5 @@ public class MealInMemoryRepository {
                 index = i;
         }
         return index;
-    }
-
-    private int getLastIdMealInList() {
-        if (this.mealList.isEmpty())
-            return 0;
-
-        List<Integer> idList = this.mealList.stream()
-                .map(Meal::getId)
-                .sorted()
-                .collect(Collectors.toList());
-
-        return idList.get(idList.size() - 1);
     }
 }

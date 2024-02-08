@@ -58,7 +58,7 @@
 <h3><a href="index.html">Home</a></h3>
 <hr>
 <h2>Meals</h2>
-<h3><a href="meals/add">Add meal</a></h3>
+<h3><a href="meals/new">Add meal</a></h3>
 <table>
     <thead>
     <tr>
@@ -73,33 +73,33 @@
         <c:set var="excess" value="${meal.isExcess()}"/>
         <fmt:parseDate value="${meal.getDateTime()}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
         <c:if test="${excess == true}">
-            <tr>
-                <td style="color: red">
+            <tr style="color: red">
+                <td>
                     <fmt:formatDate pattern="yyyy-MM-dd HH:mm" value="${ parsedDateTime }" />
                 </td>
-                <td style="color: red">
+                <td>
                     <c:out value="${meal.getDescription()}"></c:out>
                 </td>
-                <td style="color: red">
+                <td>
                     <c:out value="${meal.getCalories()}"></c:out>
                 </td>
-                <td><a href="meals/edit/<c:out value='${meal.getId()}' />">Update</a></td>
-                <td><a href="meals/delete/<c:out value='${meal.getId()}' />">Delete</a></td>
+                <td><a href="meals/edit?id=<c:out value='${meal.getId()}' />">Update</a></td>
+                <td><a href="meals/delete?id=<c:out value='${meal.getId()}' />">Delete</a></td>
             </tr>
         </c:if>
         <c:if test="${excess == false}">
-            <tr>
-                <td style="color: darkgreen">
+            <tr style="color: darkgreen">
+                <td>
                     <fmt:formatDate pattern="yyyy-MM-dd HH:mm" value="${parsedDateTime}" />
                 </td>
-                <td style="color: darkgreen">
+                <td >
                     <c:out value="${meal.getDescription()}"></c:out>
                 </td>
-                <td style="color: darkgreen">
+                <td>
                     <c:out value="${meal.getCalories()}"></c:out>
                 </td>
-                <td><a href="meals/edit/<c:out value='${meal.getId()}' />">Update</a></td>
-                <td><a href="meals/delete/<c:out value='${meal.getId()}' />">Delete</a></td>
+                <td><a href="meals/edit?id=<c:out value='${meal.getId()}' />">Update</a></td>
+                <td><a href="meals/delete?id=<c:out value='${meal.getId()}' />">Delete</a></td>
             </tr>
         </c:if>
     </c:forEach>

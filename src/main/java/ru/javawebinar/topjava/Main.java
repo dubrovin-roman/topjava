@@ -1,7 +1,7 @@
 package ru.javawebinar.topjava;
 
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.repository.MealInMemoryRepository;
+import ru.javawebinar.topjava.repository.impl.MealInMemoryRepository;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -22,7 +22,7 @@ public class Main {
         System.out.println("-------------------------------------------------------");
 
         Meal newMeal = new Meal(LocalDateTime.of(2024, Month.JANUARY, 31, 8, 0), "Завтрак", 1000);
-        inMemoryRepository.saveMeal(newMeal);
+        inMemoryRepository.save(newMeal);
 
         List<Meal> mealList2 = inMemoryRepository.findAll();
         mealList2.forEach(System.out::println);
@@ -34,7 +34,7 @@ public class Main {
 
         Meal newMeal1 = new Meal(LocalDateTime.of(2024, Month.JANUARY, 31, 8, 0), "Завтрак", 1000);
         newMeal1.setId(3);
-        inMemoryRepository.saveMeal(newMeal1);
+        inMemoryRepository.save(newMeal1);
 
         List<Meal> mealList3 = inMemoryRepository.findAll();
         mealList3.forEach(System.out::println);
