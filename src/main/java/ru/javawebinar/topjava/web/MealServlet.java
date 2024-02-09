@@ -2,7 +2,7 @@ package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.repository.impl.MealInMemoryRepository;
+import ru.javawebinar.topjava.repository.MealInMemoryRepository;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
 
@@ -10,10 +10,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -24,7 +22,7 @@ public class MealServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        mealRepository = MealInMemoryRepository.getInstance();
+        mealRepository = new MealInMemoryRepository();
     }
 
     @Override
@@ -68,7 +66,7 @@ public class MealServlet extends HttpServlet {
         int id = Integer.parseInt(req.getParameter("id"));
         mealRepository.deleteById(id);
         log.debug("delete meal with id = " + id);
-        resp.sendRedirect("/topjava/meals");
+        resp.sendRedirect(req.getContextPath() + "/meals");
     }
 
     private void showNewForm(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -82,9 +80,9 @@ public class MealServlet extends HttpServlet {
         String description = req.getParameter("description");
         int calories = Integer.parseInt(req.getParameter("calories"));
         Meal meal = new Meal(localDateTime, description, calories);
-        mealRepository.save(meal);
-        log.debug("create new meal");
-        resp.sendRedirect("/topjava/meals");
+        int id = mealRepository.save(meal);
+        log.debug("create new meal with id = " + id);
+        resp.sendRedirect(req.getContextPath() + "/meals");
     }
 
     private void showEditForm(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -104,6 +102,6 @@ public class MealServlet extends HttpServlet {
         Meal meal = new Meal(id, localDateTime, description, calories);
         mealRepository.save(meal);
         log.debug("update meal with id = " + id);
-        resp.sendRedirect("/topjava/meals");
+        resp.sendRedirect(req.getContextPath() + "/meals");
     }
 }

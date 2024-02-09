@@ -4,13 +4,9 @@ import java.time.LocalDateTime;
 
 public class MealTo {
     private int id;
-
     private LocalDateTime dateTime;
-
     private String description;
-
     private int calories;
-
     private boolean excess;
 
     public MealTo() {

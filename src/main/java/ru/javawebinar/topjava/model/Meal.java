@@ -7,9 +7,7 @@ import java.time.LocalTime;
 public class Meal {
     private int id;
     private LocalDateTime dateTime;
-
     private String description;
-
     private int calories;
 
     public Meal() {
