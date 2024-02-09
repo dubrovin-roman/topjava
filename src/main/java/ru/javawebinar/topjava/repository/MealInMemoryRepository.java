@@ -48,8 +48,7 @@ public class MealInMemoryRepository implements MealRepository {
             mealMap.put(mealId, meal);
         } else {
             mealId = meal.getId();
-            Meal mealFromMap = mealMap.get(mealId);
-            mealFromMap.setMainData(meal.getDateTime(), meal.getDescription(), meal.getCalories());
+            mealMap.put(mealId, meal);
         }
         return mealId;
     }
