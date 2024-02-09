@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: dubro
-  Date: 08.02.2024
-  Time: 21:23
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
@@ -25,24 +18,15 @@
 <body>
 <h3><a href="/topjava/index.html">Home</a></h3>
 <hr>
-<c:if test="${meal == null}">
-    <h2>Add New Meal</h2>
-</c:if>
 
-<c:if test="${meal != null}">
-    <h2>Edit Meal</h2>
-</c:if>
+<h2><c:out value="${meal == null ? 'Add New Meal' : 'Edit Meal'}"/></h2>
 
-<c:if test="${meal != null}">
-    <form action="update" method="post">
-</c:if>
+<form action="<c:out value="${meal == null ? 'insert' : 'update'}" />" method="post">
 
-<c:if test="${meal == null}">
-    <form action="insert" method="post">
-</c:if>
     <c:if test="${meal != null}">
-        <input type="hidden" name="id" value="<c:out value='${meal.id}' />" />
+        <input type="hidden" name="id" value="<c:out value='${meal.id}' />"/>
     </c:if>
+
     <div class="group-input">
         <label for="localDateTime">DateTime:</label>
         <input type="datetime-local" id="localDateTime" value="<c:out value='${meal.dateTime}' />" name="localDateTime">

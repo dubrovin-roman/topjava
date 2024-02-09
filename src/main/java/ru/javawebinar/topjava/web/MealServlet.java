@@ -12,11 +12,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class MealServlet extends HttpServlet {
-    private final static int CALORIES_PER_DAY = 2000;
+    private static final int CALORIES_PER_DAY = 2000;
     private static final Logger log = getLogger(MealServlet.class);
     private MealRepository mealRepository;
 
@@ -27,7 +28,16 @@ public class MealServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doGet(req, resp);
+        String action = req.getServletPath();
+
+        switch (action) {
+            case "/meals/insert":
+                saveMeal(req, resp, true);
+                break;
+            case "/meals/update":
+                saveMeal(req, resp, false);
+                break;
+        }
     }
 
     @Override
@@ -44,21 +54,18 @@ public class MealServlet extends HttpServlet {
             case "/meals/new":
                 showNewForm(req, resp);
                 break;
-            case "/meals/insert":
-                insertMeals(req, resp);
-                break;
             case "/meals/edit":
                 showEditForm(req, resp);
-                break;
-            case "/meals/update":
-                updateMeal(req, resp);
                 break;
         }
     }
 
     private void displayMeals(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         log.debug("redirect to meals");
-        req.setAttribute("meals", MealsUtil.convertMealListTo(mealRepository.findAll(), CALORIES_PER_DAY));
+        req.setAttribute("meals", MealsUtil.filteredByStreams(mealRepository.findAll(),
+                LocalTime.of(0,0),
+                LocalTime.of(23, 59),
+                CALORIES_PER_DAY));
         req.getRequestDispatcher("/meal/meals.jsp").forward(req, resp);
     }
 
@@ -74,17 +81,6 @@ public class MealServlet extends HttpServlet {
         req.getRequestDispatcher("/meal/meal-form.jsp").forward(req, resp);
     }
 
-    private void insertMeals(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setCharacterEncoding("UTF-8");
-        LocalDateTime localDateTime = LocalDateTime.parse(req.getParameter("localDateTime"));
-        String description = req.getParameter("description");
-        int calories = Integer.parseInt(req.getParameter("calories"));
-        Meal meal = new Meal(localDateTime, description, calories);
-        int id = mealRepository.save(meal);
-        log.debug("create new meal with id = " + id);
-        resp.sendRedirect(req.getContextPath() + "/meals");
-    }
-
     private void showEditForm(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int id = Integer.parseInt(req.getParameter("id"));
         Meal mealFromDB = mealRepository.findById(id);
@@ -93,15 +89,24 @@ public class MealServlet extends HttpServlet {
         req.getRequestDispatcher("/meal/meal-form.jsp").forward(req, resp);
     }
 
-    private void updateMeal(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    private void saveMeal(HttpServletRequest req, HttpServletResponse resp, boolean isAddNew) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
-        int id = Integer.parseInt(req.getParameter("id"));
         LocalDateTime localDateTime = LocalDateTime.parse(req.getParameter("localDateTime"));
         String description = req.getParameter("description");
         int calories = Integer.parseInt(req.getParameter("calories"));
-        Meal meal = new Meal(id, localDateTime, description, calories);
-        mealRepository.save(meal);
-        log.debug("update meal with id = " + id);
+        Meal meal;
+        String messageLog;
+        int id;
+        if (isAddNew) {
+            meal = new Meal(localDateTime, description, calories);
+            messageLog = "create new meal with id = ";
+        } else {
+            id = Integer.parseInt(req.getParameter("id"));
+            meal = new Meal(id, localDateTime, description, calories);
+            messageLog = "update meal with id = ";
+        }
+        id = mealRepository.save(meal);
+        log.debug(messageLog + id);
         resp.sendRedirect(req.getContextPath() + "/meals");
     }
 }

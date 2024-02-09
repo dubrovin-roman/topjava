@@ -4,15 +4,16 @@ import ru.javawebinar.topjava.model.Meal;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MealInMemoryRepository implements MealRepository {
-    private final List<Meal> mealList = new CopyOnWriteArrayList<>();
-    private final AtomicInteger counterId = new AtomicInteger(1);
+    private final Map<Integer, Meal> mealMap = new ConcurrentHashMap<>();
+    private final AtomicInteger counterId = new AtomicInteger(0);
 
     public MealInMemoryRepository() {
         List<Meal> meals = Arrays.asList(
@@ -30,42 +31,31 @@ public class MealInMemoryRepository implements MealRepository {
 
     @Override
     public List<Meal> findAll() {
-        return Collections.unmodifiableList(mealList);
+        return new ArrayList<>(mealMap.values());
     }
 
     @Override
     public Meal findById(int id) {
-        return mealList.get(getIndexById(id));
+        return mealMap.get(id);
     }
 
     @Override
     public int save(Meal meal) {
         int mealId;
-        if (meal.getId() == 0) {
+        if (meal.getId() == null) {
             mealId = counterId.getAndIncrement();
             meal.setId(mealId);
-            mealList.add(meal);
+            mealMap.put(mealId, meal);
         } else {
             mealId = meal.getId();
-            Meal mealFromList = mealList.get(getIndexById(mealId));
-            mealFromList.setDateTime(meal.getDateTime());
-            mealFromList.setDescription(meal.getDescription());
-            mealFromList.setCalories(meal.getCalories());
+            Meal mealFromMap = mealMap.get(mealId);
+            mealFromMap.setMainData(meal.getDateTime(), meal.getDescription(), meal.getCalories());
         }
         return mealId;
     }
 
     @Override
     public void deleteById(int mealId) {
-        mealList.remove(getIndexById(mealId));
-    }
-
-    private int getIndexById(int mealId) {
-        int index = -1;
-        for (int i = 0; i < mealList.size(); i++) {
-            if (mealList.get(i).getId() == mealId)
-                index = i;
-        }
-        return index;
+        mealMap.remove(mealId);
     }
 }
