@@ -65,14 +65,14 @@
     <c:forEach var="meal" items="${meals}">
         <c:set var="excess" value="${meal.excess}"/>
         <fmt:parseDate value="${meal.getDateTime()}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both"/>
-        <tr style="<c:out value="${excess ? 'color: red' : 'color: darkgreen'}" />">
+        <tr style="color: <c:out value="${excess ? 'red' : 'darkgreen'}" />">
             <td>
                 <fmt:formatDate pattern="yyyy-MM-dd HH:mm" value="${ parsedDateTime }"/>
             </td>
-            <td>${meal.description}</td>
+            <td><c:out value='${meal.description}' /></td>
             <td>${meal.calories}</td>
-            <td><a href="meals/edit?id=<c:out value='${meal.getId()}' />">Update</a></td>
-            <td><a href="meals/delete?id=<c:out value='${meal.getId()}' />">Delete</a></td>
+            <td><a href="meals/edit?id=${meal.id}">Update</a></td>
+            <td><a href="meals/delete?id=${meal.id}">Delete</a></td>
         </tr>
     </c:forEach>
     <tbody>

@@ -24,12 +24,12 @@
 <form action="<c:out value="${meal == null ? 'insert' : 'update'}" />" method="post">
 
     <c:if test="${meal != null}">
-        <input type="hidden" name="id" value="<c:out value='${meal.id}' />"/>
+        <input type="hidden" name="id" value="${meal.id}"/>
     </c:if>
 
     <div class="group-input">
         <label for="localDateTime">DateTime:</label>
-        <input type="datetime-local" id="localDateTime" value="<c:out value='${meal.dateTime}' />" name="localDateTime">
+        <input type="datetime-local" id="localDateTime" value="${meal.dateTime}" name="localDateTime">
     </div>
 
     <div class="group-input">
@@ -39,7 +39,7 @@
 
     <div class="group-input">
         <label for="calories">Calories:</label>
-        <input type="number" id="calories" value="<c:out value='${meal.calories}' />" name="calories">
+        <input type="number" id="calories" value="${meal.calories}" name="calories">
     </div>
 
     <div>

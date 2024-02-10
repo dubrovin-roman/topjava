@@ -63,8 +63,8 @@ public class MealServlet extends HttpServlet {
     private void displayMeals(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         log.debug("redirect to meals");
         req.setAttribute("meals", MealsUtil.filteredByStreams(mealRepository.findAll(),
-                LocalTime.of(0,0),
-                LocalTime.of(23, 59),
+                LocalTime.MIN,
+                LocalTime.MAX,
                 CALORIES_PER_DAY));
         req.getRequestDispatcher("/meal/meals.jsp").forward(req, resp);
     }
@@ -72,7 +72,7 @@ public class MealServlet extends HttpServlet {
     private void deleteMeal(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int id = Integer.parseInt(req.getParameter("id"));
         mealRepository.deleteById(id);
-        log.debug("delete meal with id = " + id);
+        log.debug("has been deleted meal with id = " + id);
         resp.sendRedirect(req.getContextPath() + "/meals");
     }
 
@@ -99,11 +99,11 @@ public class MealServlet extends HttpServlet {
         int id;
         if (isAddNew) {
             meal = new Meal(localDateTime, description, calories);
-            messageLog = "create new meal with id = ";
+            messageLog = "has been created new meal with id = ";
         } else {
             id = Integer.parseInt(req.getParameter("id"));
             meal = new Meal(id, localDateTime, description, calories);
-            messageLog = "update meal with id = ";
+            messageLog = "has been updated meal with id = ";
         }
         id = mealRepository.save(meal);
         log.debug(messageLog + id);

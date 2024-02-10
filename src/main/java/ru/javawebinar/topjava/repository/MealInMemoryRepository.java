@@ -40,21 +40,24 @@ public class MealInMemoryRepository implements MealRepository {
     }
 
     @Override
-    public int save(Meal meal) {
-        int mealId;
+    public Integer save(Meal meal) {
+        int id;
         if (meal.getId() == null) {
-            mealId = counterId.getAndIncrement();
-            meal.setId(mealId);
-            mealMap.put(mealId, meal);
+            id = counterId.getAndIncrement();
+            meal.setId(id);
+            mealMap.put(id, meal);
         } else {
-            mealId = meal.getId();
-            mealMap.put(mealId, meal);
+            id = meal.getId();
+            if (!mealMap.containsKey(id)) {
+                return null;
+            }
+            mealMap.put(id, meal);
         }
-        return mealId;
+        return id;
     }
 
     @Override
-    public void deleteById(int mealId) {
-        mealMap.remove(mealId);
+    public void deleteById(int id) {
+        mealMap.remove(id);
     }
 }

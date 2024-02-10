@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface MealRepository {
     List<Meal> findAll();
-    Meal findById(int mealId);
-    int save(Meal meal);
+    Meal findById(int id);
+    Integer save(Meal meal);
     void deleteById(int mealId);
 }
