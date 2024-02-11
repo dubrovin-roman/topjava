@@ -47,11 +47,8 @@ public class MealInMemoryRepository implements MealRepository {
             meal.setId(id);
             mealMap.put(id, meal);
         } else {
-            id = meal.getId();
-            if (!mealMap.containsKey(id)) {
-                return null;
-            }
-            mealMap.put(id, meal);
+            Meal mealNew = mealMap.computeIfPresent(meal.getId(), (integer, mealOld) -> meal);
+            id = mealNew != null ? mealNew.getId() : null;
         }
         return id;
     }

@@ -8,5 +8,5 @@ public interface MealRepository {
     List<Meal> findAll();
     Meal findById(int id);
     Integer save(Meal meal);
-    void deleteById(int mealId);
+    void deleteById(int id);
 }

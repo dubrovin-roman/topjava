@@ -19,9 +19,9 @@
 <h3><a href="/topjava/index.html">Home</a></h3>
 <hr>
 
-<h2><c:out value="${meal == null ? 'Add New Meal' : 'Edit Meal'}"/></h2>
+<h2>${meal == null ? 'Add New Meal' : 'Edit Meal'}</h2>
 
-<form action="<c:out value="${meal == null ? 'insert' : 'update'}" />" method="post">
+<form action="${meal == null ? 'insert' : 'update'}" method="post">
 
     <c:if test="${meal != null}">
         <input type="hidden" name="id" value="${meal.id}"/>
