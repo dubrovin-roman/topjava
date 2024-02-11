@@ -29,17 +29,17 @@
 
     <div class="group-input">
         <label for="localDateTime">DateTime:</label>
-        <input type="datetime-local" id="localDateTime" value="${meal.dateTime}" name="localDateTime">
+        <input type="datetime-local" id="localDateTime" value="${meal.dateTime}" name="localDateTime" required>
     </div>
 
     <div class="group-input">
         <label for="description">Description:</label>
-        <input type="text" id="description" value="<c:out value='${meal.description}' />" name="description">
+        <input type="text" id="description" value="<c:out value='${meal.description}' />" name="description" required>
     </div>
 
     <div class="group-input">
         <label for="calories">Calories:</label>
-        <input type="number" id="calories" value="${meal.calories}" name="calories">
+        <input type="number" id="calories" value="${meal.calories}" name="calories" required>
     </div>
 
     <div>
