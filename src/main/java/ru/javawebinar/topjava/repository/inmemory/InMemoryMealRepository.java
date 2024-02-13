@@ -5,7 +5,6 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
-import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,11 +19,11 @@ public class InMemoryMealRepository implements MealRepository {
     private final AtomicInteger counter = new AtomicInteger(0);
 
     public InMemoryMealRepository() {
-        MealsUtil.meals.forEach(meal -> save(meal, SecurityUtil.authUserId()));
+        MealsUtil.meals.forEach(meal -> save(meal, 1));
     }
 
     @Override
-    public Meal save(Meal meal, int userId) {
+    public synchronized Meal save(Meal meal, int userId) {
         if (meal.getUserId() != userId) {
             return null;
         }
@@ -39,7 +38,7 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-    public boolean delete(int id, int userId) {
+    public synchronized boolean delete(int id, int userId) {
         if (get(id, userId) == null) {
             return false;
         }
