@@ -12,16 +12,16 @@ public class DateTimeUtil {
         return lt.compareTo(startTime) >= 0 && lt.compareTo(endTime) < 0;
     }
 
-    public static boolean isBetweenDate(LocalDate ld, LocalDate startDate, LocalDate endTime) {
-        if (startDate == null && endTime == null) {
+    public static boolean isBetweenDate(LocalDate ld, LocalDate startDate, LocalDate endDate) {
+        if (startDate == null && endDate == null) {
             return true;
         } else if (startDate == null) {
-            return ld.isBefore(endTime);
-        } else if (endTime == null) {
-            return ld.isAfter(startDate);
+            return !ld.isAfter(endDate);
+        } else if (endDate == null) {
+            return !ld.isBefore(startDate);
         }
 
-        return ld.isAfter(startDate) && ld.isBefore(endTime);
+        return !(ld.isBefore(startDate) || ld.isAfter(endDate));
     }
 
     public static String toString(LocalDateTime ldt) {

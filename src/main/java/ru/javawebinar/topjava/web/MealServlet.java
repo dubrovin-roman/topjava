@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import javax.servlet.ServletException;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 public class MealServlet extends HttpServlet {
@@ -75,7 +77,17 @@ public class MealServlet extends HttpServlet {
             case "all":
             default:
                 log.info("getAll");
-                request.setAttribute("meals", mealRestController.getAll());
+                String startDateStr = request.getParameter("startDate");
+                String endDateStr = request.getParameter("endDate");
+                String startTimeStr = request.getParameter("startTime");
+                String endTimeStr = request.getParameter("endTime");
+                List<MealTo> mealToList;
+                if (startDateStr != null || endDateStr != null || startTimeStr != null || endTimeStr != null) {
+                    mealToList = mealRestController.getAll(startDateStr, endDateStr, startTimeStr, endTimeStr);
+                } else {
+                    mealToList = mealRestController.getAll();
+                }
+                request.setAttribute("meals", mealToList);
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
         }

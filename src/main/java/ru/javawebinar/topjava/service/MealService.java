@@ -9,6 +9,7 @@ import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.util.ValidationUtil;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -41,7 +42,7 @@ public class MealService {
         return MealsUtil.getTos(repository.getAll(userId), MealsUtil.DEFAULT_CALORIES_PER_DAY);
     }
 
-    public List<MealTo> getAll(int userId, LocalDate starDate, LocalDate endDate) {
-        return MealsUtil.getTos(repository.getAll(userId, starDate, endDate), MealsUtil.DEFAULT_CALORIES_PER_DAY);
+    public List<MealTo> getAll(int userId, LocalDate starDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
+        return MealsUtil.getFilteredTos(repository.getAll(userId, starDate, endDate), MealsUtil.DEFAULT_CALORIES_PER_DAY, startTime, endTime);
     }
 }

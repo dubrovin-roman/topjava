@@ -11,6 +11,7 @@ import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -60,8 +61,12 @@ public class MealRestController {
         return service.getAll(SecurityUtil.authUserId());
     }
 
-    public List<MealTo> getAll(LocalDate startDate, LocalDate endDate) {
-        log.info("getAllFilterByDate");
-        return service.getAll(SecurityUtil.authUserId(), startDate, endDate);
+    public List<MealTo> getAll(String startDateStr, String endDateStr, String startTimeStr, String endTimeStr) {
+        log.info("getAllFilterByDateAndTime");
+        LocalDate startDate = startDateStr.isEmpty() ? null : LocalDate.parse(startDateStr);
+        LocalDate endDate = endDateStr.isEmpty() ? null : LocalDate.parse(endDateStr);
+        LocalTime startTime = startTimeStr.isEmpty() ? LocalTime.MIN : LocalTime.parse(startTimeStr);
+        LocalTime endTime = endTimeStr.isEmpty() ? LocalTime.MAX : LocalTime.parse(endTimeStr);
+        return service.getAll(SecurityUtil.authUserId(), startDate, endDate, startTime, endTime);
     }
  }
