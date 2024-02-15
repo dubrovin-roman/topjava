@@ -77,16 +77,11 @@ public class MealServlet extends HttpServlet {
             case "all":
             default:
                 log.info("getAll");
-                String startDateStr = request.getParameter("startDate");
-                String endDateStr = request.getParameter("endDate");
-                String startTimeStr = request.getParameter("startTime");
-                String endTimeStr = request.getParameter("endTime");
-                List<MealTo> mealToList;
-                if (startDateStr != null || endDateStr != null || startTimeStr != null || endTimeStr != null) {
-                    mealToList = mealRestController.getAll(startDateStr, endDateStr, startTimeStr, endTimeStr);
-                } else {
-                    mealToList = mealRestController.getAll();
-                }
+                List<MealTo> mealToList = mealRestController.getAll(
+                        request.getParameter("startDate"),
+                        request.getParameter("endDate"),
+                        request.getParameter("startTime"),
+                        request.getParameter("endTime"));
                 request.setAttribute("meals", mealToList);
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;

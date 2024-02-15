@@ -62,11 +62,22 @@ public class MealRestController {
     }
 
     public List<MealTo> getAll(String startDateStr, String endDateStr, String startTimeStr, String endTimeStr) {
-        log.info("getAllFilterByDateAndTime");
-        LocalDate startDate = startDateStr.isEmpty() ? null : LocalDate.parse(startDateStr);
-        LocalDate endDate = endDateStr.isEmpty() ? null : LocalDate.parse(endDateStr);
-        LocalTime startTime = startTimeStr.isEmpty() ? LocalTime.MIN : LocalTime.parse(startTimeStr);
-        LocalTime endTime = endTimeStr.isEmpty() ? LocalTime.MAX : LocalTime.parse(endTimeStr);
-        return service.getAll(SecurityUtil.authUserId(), startDate, endDate, startTime, endTime);
+        log.info("getAll");
+        List<MealTo> mealTos;
+        if (startDateStr != null || endDateStr != null || startTimeStr != null || endTimeStr != null) {
+            assert startDateStr != null;
+            LocalDate startDate = startDateStr.isEmpty() ? null : LocalDate.parse(startDateStr);
+            assert endDateStr != null;
+            LocalDate endDate = endDateStr.isEmpty() ? null : LocalDate.parse(endDateStr);
+            assert startTimeStr != null;
+            LocalTime startTime = startTimeStr.isEmpty() ? LocalTime.MIN : LocalTime.parse(startTimeStr);
+            assert endTimeStr != null;
+            LocalTime endTime = endTimeStr.isEmpty() ? LocalTime.MAX : LocalTime.parse(endTimeStr);
+            mealTos = service.getAll(SecurityUtil.authUserId(), startDate, endDate, startTime, endTime);
+        } else {
+            mealTos = service.getAll(SecurityUtil.authUserId());
+        }
+
+        return mealTos;
     }
  }
