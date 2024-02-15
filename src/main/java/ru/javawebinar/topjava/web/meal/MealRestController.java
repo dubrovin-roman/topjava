@@ -64,18 +64,18 @@ public class MealRestController {
     public List<MealTo> getAll(String startDateStr, String endDateStr, String startTimeStr, String endTimeStr) {
         log.info("getAll");
         List<MealTo> mealTos;
-        if (startDateStr != null || endDateStr != null || startTimeStr != null || endTimeStr != null) {
-            assert startDateStr != null;
+        if (startDateStr == null && endDateStr == null && startTimeStr == null && endTimeStr == null) {
+            mealTos = service.getAll(SecurityUtil.authUserId());
+        } else {
+            startDateStr = startDateStr == null ? "" : startDateStr;
             LocalDate startDate = startDateStr.isEmpty() ? null : LocalDate.parse(startDateStr);
-            assert endDateStr != null;
+            endDateStr = endDateStr == null ? "" : endDateStr;
             LocalDate endDate = endDateStr.isEmpty() ? null : LocalDate.parse(endDateStr);
-            assert startTimeStr != null;
+            startTimeStr = startTimeStr == null ? "" : startTimeStr;
             LocalTime startTime = startTimeStr.isEmpty() ? LocalTime.MIN : LocalTime.parse(startTimeStr);
-            assert endTimeStr != null;
+            endTimeStr = endTimeStr == null ? "" : endTimeStr;
             LocalTime endTime = endTimeStr.isEmpty() ? LocalTime.MAX : LocalTime.parse(endTimeStr);
             mealTos = service.getAll(SecurityUtil.authUserId(), startDate, endDate, startTime, endTime);
-        } else {
-            mealTos = service.getAll(SecurityUtil.authUserId());
         }
 
         return mealTos;
