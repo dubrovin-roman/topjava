@@ -25,7 +25,7 @@ public class UserServlet extends HttpServlet {
         int userId = getAuthUserId(request);
         log.info("make choice authUserId = {}", userId);
         SecurityUtil.setAuthUserId(userId);
-        response.sendRedirect(request.getContextPath() + "/index.html");
+        response.sendRedirect(request.getContextPath() + "/meals");
     }
 
     private int getAuthUserId(HttpServletRequest request) {

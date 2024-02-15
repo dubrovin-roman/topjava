@@ -27,19 +27,19 @@
     <form action="meals" method="get">
         <div>
             <label for="startDate">От даты (включая)</label>
-            <input id="startDate" type="date" name="startDate">
+            <input id="startDate" type="date" name="startDate" value="${startDate}">
         </div>
         <div>
             <label for="endDate">До даты (включая)</label>
-            <input id="endDate" type="date" name="endDate">
+            <input id="endDate" type="date" name="endDate" value="${endDate}">
         </div>
         <div>
             <label for="startTime">От времени (включая)</label>
-            <input id="startTime" type="time" name="startTime">
+            <input id="startTime" type="time" name="startTime" value="${startTime}">
         </div>
         <div>
             <label for="endTime">До времени (исключая)</label>
-            <input id="endTime" type="time" name="endTime">
+            <input id="endTime" type="time" name="endTime" value="${endTime}">
         </div>
         <button type="submit">Отфильтровать</button>
     </form>
