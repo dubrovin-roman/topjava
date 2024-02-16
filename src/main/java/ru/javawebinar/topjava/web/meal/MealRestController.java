@@ -61,7 +61,7 @@ public class MealRestController {
         return service.getAll(SecurityUtil.authUserId());
     }
 
-    public List<MealTo> getAll(String startDateStr, String endDateStr, String startTimeStr, String endTimeStr) {
+    public List<MealTo> getAllFilterByDateAndTime(String startDateStr, String endDateStr, String startTimeStr, String endTimeStr) {
         log.info("getAll");
         List<MealTo> mealTos;
         if (startDateStr == null && endDateStr == null && startTimeStr == null && endTimeStr == null) {
@@ -75,7 +75,7 @@ public class MealRestController {
             LocalTime startTime = startTimeStr.isEmpty() ? LocalTime.MIN : LocalTime.parse(startTimeStr);
             endTimeStr = endTimeStr == null ? "" : endTimeStr;
             LocalTime endTime = endTimeStr.isEmpty() ? LocalTime.MAX : LocalTime.parse(endTimeStr);
-            mealTos = service.getAll(SecurityUtil.authUserId(), startDate, endDate, startTime, endTime);
+            mealTos = service.getAllFilterByDateAndTime(SecurityUtil.authUserId(), startDate, endDate, startTime, endTime);
         }
 
         return mealTos;

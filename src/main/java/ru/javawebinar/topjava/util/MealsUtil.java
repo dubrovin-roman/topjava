@@ -2,7 +2,6 @@ package ru.javawebinar.topjava.util;
 
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
-import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,6 +25,16 @@ public class MealsUtil {
             new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000, 1),
             new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500, 1),
             new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410, 1)
+    );
+
+    public static final List<Meal> meals2 = Arrays.asList(
+            new Meal(LocalDateTime.of(2024, Month.FEBRUARY, 25, 10, 0), "Завтрак", 500, 2),
+            new Meal(LocalDateTime.of(2024, Month.FEBRUARY, 25, 13, 0), "Обед", 1500, 2),
+            new Meal(LocalDateTime.of(2024, Month.FEBRUARY, 25, 20, 0), "Ужин", 500, 2),
+            new Meal(LocalDateTime.of(2024, Month.FEBRUARY, 26, 10, 0), "Завтрак", 1000, 2),
+            new Meal(LocalDateTime.of(2024, Month.FEBRUARY, 26, 13, 0), "Обед", 500, 2),
+            new Meal(LocalDateTime.of(2024, Month.FEBRUARY, 26, 20, 0), "Ужин", 410, 2),
+            new Meal(LocalDateTime.of(2024, Month.FEBRUARY, 28, 20, 0), "Ужин", 2500, 2)
     );
 
     public static List<MealTo> getTos(Collection<Meal> meals, int caloriesPerDay) {

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.AbstractNamedEntity;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
-import ru.javawebinar.topjava.util.UserUtil;
 
 import java.util.Comparator;
 import java.util.List;
@@ -39,7 +38,7 @@ public class InMemoryUserRepository implements UserRepository {
             return user;
         }
 
-        return repository.computeIfPresent(user.getId(), (id, userOld) -> user);
+        return repository.computeIfPresent(user.getId(), (id, oldUser) -> user);
     }
 
     @Override
@@ -62,7 +61,8 @@ public class InMemoryUserRepository implements UserRepository {
         log.info("getByEmail {}", email);
         return repository.values()
                 .stream()
-                .filter(user -> user.getEmail().equals(email))
-                .collect(UserUtil.toSingleton());
+                .filter(user -> user.getEmail().equalsIgnoreCase(email))
+                .findFirst()
+                .orElse(null);
     }
 }

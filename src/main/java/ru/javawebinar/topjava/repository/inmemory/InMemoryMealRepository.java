@@ -22,6 +22,7 @@ public class InMemoryMealRepository implements MealRepository {
 
     public InMemoryMealRepository() {
         MealsUtil.meals.forEach(meal -> save(meal, 1));
+        MealsUtil.meals2.forEach(meal -> save(meal, 2));
     }
 
     @Override
@@ -66,7 +67,7 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-    public List<Meal> getAll(int userId, LocalDate startDate, LocalDate endDate) {
+    public List<Meal> getAllFilterByDate(int userId, LocalDate startDate, LocalDate endDate) {
         return getAll(userId).stream()
                 .filter(meal -> DateTimeUtil.isBetweenDate(meal.getDate(), startDate, endDate))
                 .collect(Collectors.toList());
