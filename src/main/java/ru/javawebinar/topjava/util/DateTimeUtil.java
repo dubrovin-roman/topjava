@@ -13,14 +13,8 @@ public class DateTimeUtil {
     }
 
     public static boolean isBetweenDate(LocalDate ld, LocalDate startDate, LocalDate endDate) {
-        if (startDate == null && endDate == null) {
-            return true;
-        } else if (startDate == null) {
-            return !ld.isAfter(endDate);
-        } else if (endDate == null) {
-            return !ld.isBefore(startDate);
-        }
-
+        startDate = startDate == null ? LocalDate.MIN : startDate;
+        endDate = endDate == null ? LocalDate.MAX : endDate;
         return !(ld.isBefore(startDate) || ld.isAfter(endDate));
     }
 
