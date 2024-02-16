@@ -47,7 +47,7 @@ public class MealRestController {
 
     public Meal getNew() {
         log.info("getNew");
-        return new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000, SecurityUtil.authUserId());
+        return new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000);
     }
 
     public void update(Meal meal, int id) {
@@ -58,14 +58,14 @@ public class MealRestController {
 
     public List<MealTo> getAll() {
         log.info("getAll");
-        return service.getAll(SecurityUtil.authUserId());
+        return service.getAll(SecurityUtil.authUserId(), SecurityUtil.authUserCaloriesPerDay());
     }
 
     public List<MealTo> getAllFilterByDateAndTime(String startDateStr, String endDateStr, String startTimeStr, String endTimeStr) {
         log.info("getAll");
         List<MealTo> mealTos;
         if (startDateStr == null && endDateStr == null && startTimeStr == null && endTimeStr == null) {
-            mealTos = service.getAll(SecurityUtil.authUserId());
+            mealTos = service.getAll(SecurityUtil.authUserId(), SecurityUtil.authUserCaloriesPerDay());
         } else {
             startDateStr = startDateStr == null ? "" : startDateStr;
             LocalDate startDate = startDateStr.isEmpty() ? null : LocalDate.parse(startDateStr);
@@ -75,7 +75,7 @@ public class MealRestController {
             LocalTime startTime = startTimeStr.isEmpty() ? LocalTime.MIN : LocalTime.parse(startTimeStr);
             endTimeStr = endTimeStr == null ? "" : endTimeStr;
             LocalTime endTime = endTimeStr.isEmpty() ? LocalTime.MAX : LocalTime.parse(endTimeStr);
-            mealTos = service.getAllFilterByDateAndTime(SecurityUtil.authUserId(), startDate, endDate, startTime, endTime);
+            mealTos = service.getAllFilterByDateAndTime(SecurityUtil.authUserId(), startDate, endDate, startTime, endTime, SecurityUtil.authUserCaloriesPerDay());
         }
 
         return mealTos;
