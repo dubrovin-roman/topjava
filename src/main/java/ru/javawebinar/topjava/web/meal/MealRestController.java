@@ -72,9 +72,9 @@ public class MealRestController {
             endDateStr = endDateStr == null ? "" : endDateStr;
             LocalDate endDate = endDateStr.isEmpty() ? null : LocalDate.parse(endDateStr);
             startTimeStr = startTimeStr == null ? "" : startTimeStr;
-            LocalTime startTime = startTimeStr.isEmpty() ? LocalTime.MIN : LocalTime.parse(startTimeStr);
+            LocalTime startTime = startTimeStr.isEmpty() ? null : LocalTime.parse(startTimeStr);
             endTimeStr = endTimeStr == null ? "" : endTimeStr;
-            LocalTime endTime = endTimeStr.isEmpty() ? LocalTime.MAX : LocalTime.parse(endTimeStr);
+            LocalTime endTime = endTimeStr.isEmpty() ? null : LocalTime.parse(endTimeStr);
             mealTos = service.getAllFilterByDateAndTime(SecurityUtil.authUserId(), startDate, endDate, startTime, endTime, SecurityUtil.authUserCaloriesPerDay());
         }
 

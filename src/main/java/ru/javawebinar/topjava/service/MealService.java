@@ -42,7 +42,15 @@ public class MealService {
         return MealsUtil.getTos(repository.getAll(userId), caloriesPerDay);
     }
 
-    public List<MealTo> getAllFilterByDateAndTime(int userId, LocalDate starDate, LocalDate endDate, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        return MealsUtil.getFilteredTos(repository.getAllFilterByDate(userId, starDate, endDate), caloriesPerDay, startTime, endTime);
+    public List<MealTo> getAllFilterByDateAndTime(int userId,
+                                                  LocalDate starDate,
+                                                  LocalDate endDate,
+                                                  LocalTime startTime,
+                                                  LocalTime endTime,
+                                                  int caloriesPerDay) {
+        return MealsUtil.getFilteredTos(repository.getAllFilterByDate(userId, starDate, endDate),
+                caloriesPerDay,
+                startTime,
+                endTime);
     }
 }

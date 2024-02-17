@@ -83,10 +83,6 @@ public class MealServlet extends HttpServlet {
                 String endTimeStr = request.getParameter("endTime");
                 List<MealTo> mealToList = mealRestController.getAllFilterByDateAndTime(startDateStr, endDateStr, startTimeStr, endTimeStr);
                 request.setAttribute("meals", mealToList);
-                request.setAttribute("startDate", startDateStr);
-                request.setAttribute("endDate", endDateStr);
-                request.setAttribute("startTime", startTimeStr);
-                request.setAttribute("endTime", endTimeStr);
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
         }
