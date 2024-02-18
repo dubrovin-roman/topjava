@@ -31,7 +31,7 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Meal save(Meal meal, int userId) {
-        Map<Integer, Meal> meals = repository.computeIfAbsent(userId, ConcurrentHashMap::new);
+        Map<Integer, Meal> meals = repository.computeIfAbsent(userId, (id) -> new ConcurrentHashMap<>());
         meal.setUserId(userId);
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
@@ -40,18 +40,19 @@ public class InMemoryMealRepository implements MealRepository {
         }
 
         // handle case: update, but not present in storage
-        return get(meal.getId(), userId) == null ? null : meals.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
+        return meals.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
     }
 
     @Override
     public boolean delete(int id, int userId) {
-        return get(id, userId) != null && repository.get(userId).remove(id) != null;
+        Map<Integer, Meal> meals = repository.get(userId);
+        return meals != null && meals.remove(id) != null;
     }
 
     @Override
     public Meal get(int id, int userId) {
-        Meal meal = repository.get(userId).get(id);
-        return meal != null && meal.getUserId() != userId ? null : meal;
+        Map<Integer, Meal> meals = repository.get(userId);
+        return CollectionUtils.isEmpty(meals) ? null : meals.get(id);
     }
 
     @Override
