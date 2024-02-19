@@ -15,9 +15,9 @@ public class DateTimeUtil {
     }
 
     public static boolean isBetweenDate(LocalDate ld, LocalDate startDate, LocalDate endDate) {
-        startDate = startDate == null ? LocalDate.MIN : startDate;
-        endDate = endDate == null ? LocalDate.MAX : endDate;
-        return !(ld.isBefore(startDate) || ld.isAfter(endDate));
+        boolean comparisonWithStartDate = startDate != null && ld.isBefore(startDate);
+        boolean comparisonWithEndDate = endDate != null && ld.isAfter(endDate);
+        return !(comparisonWithStartDate || comparisonWithEndDate);
     }
 
     public static String toString(LocalDateTime ldt) {
