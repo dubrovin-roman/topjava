@@ -1,5 +1,5 @@
-DELETE FROM user_role;
-DELETE FROM users;
+TRUNCATE user_role;
+TRUNCATE users CASCADE;
 ALTER SEQUENCE global_seq RESTART WITH 100000;
 
 INSERT INTO users (name, email, password)
