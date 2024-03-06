@@ -1,14 +1,13 @@
 package ru.javawebinar.topjava.service;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.Stopwatch;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -52,6 +51,9 @@ public abstract class AbstractMealServiceTest {
     @Autowired
     private MealService service;
 
+    @Autowired
+    private CacheManager cacheManager;
+
     @AfterClass
     public static void printResult() {
         log.info("\n---------------------------------" +
@@ -59,6 +61,14 @@ public abstract class AbstractMealServiceTest {
                 "\n---------------------------------" +
                 results +
                 "\n---------------------------------");
+    }
+
+    @Before
+    public void setup() {
+        Cache cache = cacheManager.getCache("meals");
+        if (cache != null) {
+            cache.clear();
+        }
     }
 
     @Test
