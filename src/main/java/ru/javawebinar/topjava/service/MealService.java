@@ -28,6 +28,10 @@ public class MealService {
         return checkNotFoundWithId(repository.get(id, userId), id);
     }
 
+    public Meal getWithUser(int id, int userId) {
+        return checkNotFoundWithId(repository.getWithUser(id, userId), id);
+    }
+
     @CacheEvict(value = "meals", allEntries = true)
     public void delete(int id, int userId) {
         checkNotFoundWithId(repository.delete(id, userId), id);
