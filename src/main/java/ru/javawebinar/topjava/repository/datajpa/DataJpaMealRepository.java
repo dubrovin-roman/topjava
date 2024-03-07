@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.repository.datajpa;
 
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
@@ -8,6 +9,7 @@ import ru.javawebinar.topjava.repository.MealRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @Transactional(readOnly = true)
@@ -60,7 +62,12 @@ public class DataJpaMealRepository implements MealRepository {
         if (meal == null) {
             return null;
         } else {
-            meal.getUser().getEmail();
+            Optional<User> optionalUser = crudUserRepository.findById(userId);
+            if (optionalUser.isEmpty()) {
+                return null;
+            }
+            User user = Hibernate.unproxy(optionalUser.get(), User.class);
+            meal.setUser(user);
             return meal;
         }
     }

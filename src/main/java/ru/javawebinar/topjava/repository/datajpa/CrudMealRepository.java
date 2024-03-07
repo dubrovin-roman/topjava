@@ -11,20 +11,20 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CrudMealRepository extends JpaRepository<Meal, Integer> {
-    @Query(nativeQuery = true, value = "SELECT * FROM meal WHERE id=:id AND user_id=:userId")
+    @Query("SELECT m FROM Meal m WHERE m.id=:id AND m.user.id=:userId")
     Optional<Meal> findByIdAndUserId(@Param("id") int id, @Param("userId") int userId);
 
-    @Query(nativeQuery = true, value = "DELETE FROM meal WHERE id=:id AND user_id=:userId")
+    @Query("DELETE FROM Meal m WHERE m.id=:id AND m.user.id=:userId")
     @Modifying
     int delete(@Param("id") int id, @Param("userId") int userId);
 
-    @Query(nativeQuery = true, value = "SELECT * FROM meal WHERE user_id=:userId ORDER BY date_time DESC")
+    @Query("SELECT m FROM Meal m WHERE m.user.id=:userId ORDER BY m.dateTime DESC")
     List<Meal> findAllByUserId(@Param("userId") int userId);
 
-    @Query(nativeQuery = true, value = "SELECT * FROM meal WHERE user_id=:userId " +
-            "AND date_time>=:startDateTime " +
-            "AND date_time<:endDateTime " +
-            "ORDER BY date_time DESC")
+    @Query("SELECT m FROM Meal m WHERE m.user.id=:userId " +
+            "AND m.dateTime>=:startDateTime " +
+            "AND m.dateTime<:endDateTime " +
+            "ORDER BY m.dateTime DESC")
     List<Meal> findBetweenHalfOpen(@Param("startDateTime") LocalDateTime startDateTime,
                                    @Param("endDateTime") LocalDateTime endDateTime,
                                    @Param("userId") int userId);
