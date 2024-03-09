@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@Transactional(readOnly = true)
 public class DataJpaMealRepository implements MealRepository {
 
     private final CrudMealRepository crudMealRepository;
@@ -26,24 +25,23 @@ public class DataJpaMealRepository implements MealRepository {
     @Override
     @Transactional
     public Meal save(Meal meal, int userId) {
-        User ref = crudUserRepository.getReferenceById(userId);
-        meal.setUser(ref);
-        if (meal.isNew()) {
+        if (meal.isNew() || get(meal.getId(), userId) != null) {
+            User ref = crudUserRepository.getReferenceById(userId);
+            meal.setUser(ref);
             return crudMealRepository.save(meal);
         } else {
-            return get(meal.getId(), userId) != null ? crudMealRepository.save(meal) : null;
+            return null;
         }
     }
 
     @Override
-    @Transactional
     public boolean delete(int id, int userId) {
         return crudMealRepository.delete(id, userId) != 0;
     }
 
     @Override
     public Meal get(int id, int userId) {
-        return crudMealRepository.findByIdAndUserId(id, userId).orElse(null);
+        return crudMealRepository.findByIdAndUserId(id, userId);
     }
 
     @Override
@@ -63,9 +61,6 @@ public class DataJpaMealRepository implements MealRepository {
             return null;
         } else {
             Optional<User> optionalUser = crudUserRepository.findById(userId);
-            if (optionalUser.isEmpty()) {
-                return null;
-            }
             User user = Hibernate.unproxy(optionalUser.get(), User.class);
             meal.setUser(user);
             return meal;
