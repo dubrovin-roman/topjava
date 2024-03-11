@@ -9,7 +9,6 @@ import ru.javawebinar.topjava.repository.MealRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class DataJpaMealRepository implements MealRepository {
@@ -55,13 +54,13 @@ public class DataJpaMealRepository implements MealRepository {
     }
 
     @Override
+    @Transactional
     public Meal getWithUser(int id, int userId) {
         Meal meal = get(id, userId);
         if (meal == null) {
             return null;
         } else {
-            Optional<User> optionalUser = crudUserRepository.findById(userId);
-            User user = Hibernate.unproxy(optionalUser.get(), User.class);
+            User user = Hibernate.unproxy(meal.getUser(), User.class);
             meal.setUser(user);
             return meal;
         }

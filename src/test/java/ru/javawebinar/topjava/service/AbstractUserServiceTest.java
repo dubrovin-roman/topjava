@@ -3,7 +3,6 @@ package ru.javawebinar.topjava.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.dao.DataAccessException;
 import ru.javawebinar.topjava.UserTestData;
@@ -26,10 +25,7 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
 
     @Before
     public void setup() {
-        Cache cache = cacheManager.getCache("users");
-        if (cache != null) {
-            cache.clear();
-        }
+        cacheManager.getCache("users").clear();
     }
 
     @Test
