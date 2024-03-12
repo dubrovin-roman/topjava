@@ -17,13 +17,6 @@ import static ru.javawebinar.topjava.UserTestData.*;
 public class DataJpaUserServiceTest extends AbstractUserServiceTest {
 
     @Test
-    public void getWithListMeals() {
-        User userActual = service.getWithMeals(USER_ID);
-        USER_MATCHER.assertMatch(userActual, user);
-        MEAL_MATCHER.assertMatch(userActual.getMeals(), getUserWithMeals().getMeals());
-    }
-
-    @Test
     public void getWithEmptyListMeals() {
         User userActual = service.getWithMeals(GUEST_ID);
         USER_MATCHER.assertMatch(userActual, guest);

@@ -54,7 +54,7 @@ public class DataJpaMealRepository implements MealRepository {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Meal getWithUser(int id, int userId) {
         Meal meal = get(id, userId);
         if (meal == null) {
