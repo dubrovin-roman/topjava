@@ -57,6 +57,7 @@ public class JspMealController {
         int userId = SecurityUtil.authUserId();
         final Meal meal = new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000);
         model.addAttribute("meal", meal);
+        model.addAttribute("isNew", true);
         log.info("get createForm new meal for user {}", userId);
         return "mealForm";
     }
@@ -67,6 +68,7 @@ public class JspMealController {
         int mealId = getId(request);
         final Meal meal = mealService.get(getId(request), userId);
         model.addAttribute("meal", meal);
+        model.addAttribute("isNew", false);
         log.info("get updateForm meal {} for user {}", mealId, userId);
         return "mealForm";
     }
@@ -103,7 +105,7 @@ public class JspMealController {
             mealService.create(meal, userId);
         }
 
-        return "redirect:/meals";
+        return "redirect:meals";
     }
 
     private int getId(HttpServletRequest request) {
