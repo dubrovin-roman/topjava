@@ -48,7 +48,7 @@ public abstract class AbstractServiceTest {
         });
     }
 
-    protected boolean isNotJdbcProfile() {
+    protected boolean isHaveNotJdbcProfile() {
         return Arrays.stream(env.getActiveProfiles()).noneMatch(env -> (env.equalsIgnoreCase("jdbc")));
     }
 }
