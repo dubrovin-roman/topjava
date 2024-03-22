@@ -2,7 +2,6 @@ package ru.javawebinar.topjava.repository.jdbc;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DataAccessUtils;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -17,8 +16,6 @@ import java.util.List;
 @Repository
 @Transactional(readOnly = true)
 public class JdbcUserRepository implements UserRepository {
-
-    private static final BeanPropertyRowMapper<User> ROW_MAPPER = BeanPropertyRowMapper.newInstance(User.class);
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -61,19 +58,19 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public User get(int id) {
-        List<User> users = jdbcTemplate.query("SELECT * FROM (users u LEFT OUTER JOIN user_role r ON u.id = r.user_id) WHERE u.id=?", ROW_MAPPER, id);
+        List<User> users = jdbcTemplate.query("SELECT * FROM (users u LEFT OUTER JOIN user_role r ON u.id = r.user_id) WHERE u.id=?", new JdbcUserResultSetExtractor(), id);
         return DataAccessUtils.singleResult(users);
     }
 
     @Override
     public User getByEmail(String email) {
 //        return jdbcTemplate.queryForObject("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
-        List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
+        List<User> users = jdbcTemplate.query("SELECT * FROM (users u LEFT OUTER JOIN user_role r ON u.id = r.user_id) WHERE u.email=?", new JdbcUserResultSetExtractor(), email);
         return DataAccessUtils.singleResult(users);
     }
 
     @Override
     public List<User> getAll() {
-        return jdbcTemplate.query("SELECT * FROM (users u LEFT OUTER JOIN user_role r ON u.id = r.user_id) ORDER BY u.name, u.email", ROW_MAPPER);
+        return jdbcTemplate.query("SELECT * FROM (users u LEFT OUTER JOIN user_role r ON u.id = r.user_id) ORDER BY u.name, u.email", new JdbcUserResultSetExtractor());
     }
 }
