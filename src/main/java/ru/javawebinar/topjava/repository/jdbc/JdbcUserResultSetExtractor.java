@@ -37,6 +37,8 @@ public class JdbcUserResultSetExtractor implements ResultSetExtractor<List<User>
                 if (roleStr != null) {
                     Role role = Role.valueOf(roleStr);
                     user.setRoles(List.of(role));
+                } else {
+                    user.setRoles(Collections.emptyList());
                 }
                 resultUserList.add(user);
             }

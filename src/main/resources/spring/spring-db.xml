@@ -86,6 +86,9 @@
         </bean>
 
         <tx:annotation-driven proxy-target-class="true" transaction-manager="transactionManager" />
+
+        <bean id="validator"
+              class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
     </beans>
 
     <beans profile="jpa,datajpa">
