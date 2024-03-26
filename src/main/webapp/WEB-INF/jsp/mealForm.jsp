@@ -9,7 +9,7 @@
     <h3><a href="${pageContext.request.contextPath}"><spring:message code="app.home"/></a></h3>
     <hr>
     <c:choose>
-        <c:when test="${isNew}">
+        <c:when test="${meal.isNew()}">
             <h2><spring:message code="meal.create.title"/></h2>
         </c:when>
         <c:otherwise>
