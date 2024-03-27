@@ -1,8 +1,12 @@
 package ru.javawebinar.topjava.repository.jdbc;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -11,12 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
+import ru.javawebinar.topjava.util.ValidationUtil;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
-import java.util.List;
-import java.util.Set;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
 @Repository
 @Transactional(readOnly = true)
@@ -44,10 +48,7 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     @Transactional
     public User save(User user) {
-        Set<ConstraintViolation<User>> violations = validator.validate(user);
-        if (!violations.isEmpty()) {
-            throw new ConstraintViolationException(violations);
-        }
+        ValidationUtil.validateFields(validator, user);
 
         BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
 
@@ -56,9 +57,9 @@ public class JdbcUserRepository implements UserRepository {
             user.setId(newKey.intValue());
         } else {
             int updatedLines = namedParameterJdbcTemplate.update("""
-                   UPDATE users SET name=:name, email=:email, password=:password, 
-                   registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id
-                """, parameterSource);
+                       UPDATE users SET name=:name, email=:email, password=:password, 
+                       registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id
+                    """, parameterSource);
 
             if (updatedLines == 0) {
                 return null;
@@ -106,5 +107,37 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public List<User> getAll() {
         return jdbcTemplate.query("SELECT * FROM (users u LEFT OUTER JOIN user_role r ON u.id = r.user_id) ORDER BY u.name, u.email", new JdbcUserResultSetExtractor());
+    }
+
+    private static class JdbcUserResultSetExtractor implements ResultSetExtractor<List<User>> {
+        private static final RowMapper<User> ROW_MAPPER = BeanPropertyRowMapper.newInstance(User.class);
+
+        private final Map<Integer, User> resultUserMap = new HashMap<>();
+
+        @Override
+        public List<User> extractData(ResultSet rs) throws SQLException, DataAccessException {
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String roleStr = rs.getString("role");
+
+                if (resultUserMap.containsKey(id)) {
+                    if (roleStr != null) {
+                        Role role = Role.valueOf(roleStr);
+                        User user = resultUserMap.get(id);
+                        user.getRoles().add(role);
+                    }
+                } else {
+                    User user = ROW_MAPPER.mapRow(rs, rs.getRow());
+                    EnumSet<Role> roles = roleStr != null ? EnumSet.of(Role.valueOf(roleStr)) : EnumSet.noneOf(Role.class);
+                    user.setRoles(roles);
+                    resultUserMap.put(user.getId(), user);
+                }
+            }
+
+            return resultUserMap.values()
+                    .stream()
+                    .sorted(Comparator.comparing(User::getName).thenComparing(User::getEmail))
+                    .toList();
+        }
     }
 }

@@ -4,5 +4,6 @@
 
 <head>
     <title><spring:message code="meal.title"/></title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/style.css">
+    <base href="${pageContext.request.contextPath}/">
+    <link rel="stylesheet" href="resources/css/style.css">
 </head>
