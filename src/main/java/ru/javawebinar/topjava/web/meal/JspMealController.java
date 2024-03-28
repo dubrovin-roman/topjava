@@ -2,7 +2,6 @@ package ru.javawebinar.topjava.web.meal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,21 +27,16 @@ import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 public class JspMealController extends AbstractMealController {
     private static final Logger log = LoggerFactory.getLogger(JspMealController.class);
 
-    @Autowired
-    private MealService mealService;
-
     @GetMapping()
     public String getAll(Model model) {
-        int userId = SecurityUtil.authUserId();
-        model.addAttribute("meals", super.getAll(userId));
+        model.addAttribute("meals", super.getAll());
         return "meals";
     }
 
     @GetMapping("/delete")
     public String delete(HttpServletRequest request) {
-        int userId = SecurityUtil.authUserId();
         int id = getId(request);
-        super.delete(id, userId);
+        super.delete(id);
         return "redirect:/meals";
     }
 
@@ -60,7 +53,7 @@ public class JspMealController extends AbstractMealController {
     public String getUpdateForm(Model model, HttpServletRequest request) {
         int userId = SecurityUtil.authUserId();
         int mealId = getId(request);
-        final Meal meal = super.get(mealId, userId);
+        final Meal meal = super.get(mealId);
         model.addAttribute("meal", meal);
         log.info("get updateForm meal {} for user {}", mealId, userId);
         return "mealForm";
@@ -68,27 +61,25 @@ public class JspMealController extends AbstractMealController {
 
     @GetMapping("/filter")
     public String getAllFilter(Model model, HttpServletRequest request) {
-        int userId = SecurityUtil.authUserId();
         LocalDate startDate = parseLocalDate(request.getParameter("startDate"));
         LocalDate endDate = parseLocalDate(request.getParameter("endDate"));
         LocalTime startTime = parseLocalTime(request.getParameter("startTime"));
         LocalTime endTime = parseLocalTime(request.getParameter("endTime"));
-        model.addAttribute("meals", super.getBetween(startDate, startTime, endDate, endTime, userId));
+        model.addAttribute("meals", super.getBetween(startDate, startTime, endDate, endTime));
         return "meals";
     }
 
     @PostMapping()
     public String save(HttpServletRequest request) throws UnsupportedEncodingException {
-        int userId = SecurityUtil.authUserId();
         Meal meal = new Meal(
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
                 Integer.parseInt(request.getParameter("calories")));
 
         if (StringUtils.hasLength(request.getParameter("id"))) {
-            super.update(meal, getId(request), userId);
+            super.update(meal, getId(request));
         } else {
-            super.create(meal, userId);
+            super.create(meal);
         }
 
         return "redirect:meals";

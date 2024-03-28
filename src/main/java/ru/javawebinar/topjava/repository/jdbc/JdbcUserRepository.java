@@ -17,7 +17,6 @@ import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 import ru.javawebinar.topjava.util.ValidationUtil;
 
-import javax.validation.Validator;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -26,29 +25,30 @@ import java.util.*;
 @Transactional(readOnly = true)
 public class JdbcUserRepository implements UserRepository {
 
+    private static final RowMapper<User> ROW_MAPPER = BeanPropertyRowMapper.newInstance(User.class);
+
+    private static final JdbcUserResultSetExtractor EXTRACTOR = new JdbcUserResultSetExtractor();
+
     private final JdbcTemplate jdbcTemplate;
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private final SimpleJdbcInsert insertUser;
 
-    private final Validator validator;
-
     @Autowired
-    public JdbcUserRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate, Validator validator) {
+    public JdbcUserRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.insertUser = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("users")
                 .usingGeneratedKeyColumns("id");
 
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-        this.validator = validator;
     }
 
     @Override
     @Transactional
     public User save(User user) {
-        ValidationUtil.validateFields(validator, user);
+        ValidationUtil.validateFields(user);
 
         BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
 
@@ -93,51 +93,44 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public User get(int id) {
-        List<User> users = jdbcTemplate.query("SELECT * FROM (users u LEFT OUTER JOIN user_role r ON u.id = r.user_id) WHERE u.id=?", new JdbcUserResultSetExtractor(), id);
+        List<User> users = jdbcTemplate.query("SELECT * FROM (users u LEFT OUTER JOIN user_role r ON u.id = r.user_id) WHERE u.id=?", EXTRACTOR, id);
         return DataAccessUtils.singleResult(users);
     }
 
     @Override
     public User getByEmail(String email) {
 //        return jdbcTemplate.queryForObject("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
-        List<User> users = jdbcTemplate.query("SELECT * FROM (users u LEFT OUTER JOIN user_role r ON u.id = r.user_id) WHERE u.email=?", new JdbcUserResultSetExtractor(), email);
+        List<User> users = jdbcTemplate.query("SELECT * FROM (users u LEFT OUTER JOIN user_role r ON u.id = r.user_id) WHERE u.email=?", EXTRACTOR, email);
         return DataAccessUtils.singleResult(users);
     }
 
     @Override
     public List<User> getAll() {
-        return jdbcTemplate.query("SELECT * FROM (users u LEFT OUTER JOIN user_role r ON u.id = r.user_id) ORDER BY u.name, u.email", new JdbcUserResultSetExtractor());
+        return jdbcTemplate.query("SELECT * FROM (users u LEFT OUTER JOIN user_role r ON u.id = r.user_id) ORDER BY u.name, u.email", EXTRACTOR);
     }
 
     private static class JdbcUserResultSetExtractor implements ResultSetExtractor<List<User>> {
-        private static final RowMapper<User> ROW_MAPPER = BeanPropertyRowMapper.newInstance(User.class);
-
-        private final Map<Integer, User> resultUserMap = new HashMap<>();
 
         @Override
         public List<User> extractData(ResultSet rs) throws SQLException, DataAccessException {
+            final Map<Integer, User> resultUserMap = new LinkedHashMap<>();
+
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String roleStr = rs.getString("role");
-
-                if (resultUserMap.containsKey(id)) {
-                    if (roleStr != null) {
-                        Role role = Role.valueOf(roleStr);
-                        User user = resultUserMap.get(id);
-                        user.getRoles().add(role);
-                    }
+                User user = resultUserMap.get(id);
+                if (user != null && roleStr != null) {
+                    Role role = Role.valueOf(roleStr);
+                    user.getRoles().add(role);
                 } else {
-                    User user = ROW_MAPPER.mapRow(rs, rs.getRow());
+                    user = ROW_MAPPER.mapRow(rs, rs.getRow());
                     EnumSet<Role> roles = roleStr != null ? EnumSet.of(Role.valueOf(roleStr)) : EnumSet.noneOf(Role.class);
                     user.setRoles(roles);
                     resultUserMap.put(user.getId(), user);
                 }
             }
 
-            return resultUserMap.values()
-                    .stream()
-                    .sorted(Comparator.comparing(User::getName).thenComparing(User::getEmail))
-                    .toList();
+            return new ArrayList<>(resultUserMap.values());
         }
     }
 }
