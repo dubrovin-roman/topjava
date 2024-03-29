@@ -10,6 +10,7 @@ import javax.validation.*;
 import java.util.Set;
 
 public class ValidationUtil {
+    private static final Validator VALIDATOR = Validation.buildDefaultValidatorFactory().getValidator();
 
     private ValidationUtil() {
     }
@@ -57,13 +58,9 @@ public class ValidationUtil {
     }
 
     public static <T> void validateFields(T target) {
-        try (ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory()) {
-            Validator validator = validatorFactory.getValidator();
-            Set<ConstraintViolation<T>> violations = validator.validate(target);
-            if (!violations.isEmpty()) {
-                throw new ConstraintViolationException(violations);
-            }
+        Set<ConstraintViolation<T>> violations = VALIDATOR.validate(target);
+        if (!violations.isEmpty()) {
+            throw new ConstraintViolationException(violations);
         }
-
     }
 }

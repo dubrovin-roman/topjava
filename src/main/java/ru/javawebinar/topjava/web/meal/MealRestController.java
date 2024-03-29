@@ -12,23 +12,23 @@ import java.util.List;
 @Controller
 public class MealRestController extends AbstractMealController {
 
-    public Meal get(int id) {
+    public Meal getMeal(int id) {
         return super.get(id);
     }
 
-    public void delete(int id) {
+    public void deleteMeal(int id) {
         super.delete(id);
     }
 
-    public List<MealTo> getAll() {
+    public List<MealTo> getAllMeals() {
         return super.getAll();
     }
 
-    public Meal create(Meal meal) {
+    public Meal createMeal(Meal meal) {
         return super.create(meal);
     }
 
-    public void update(Meal meal, int id) {
+    public void updateMeal(Meal meal, int id) {
         super.update(meal, id);
     }
 
