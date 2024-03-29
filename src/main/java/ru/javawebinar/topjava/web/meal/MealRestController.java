@@ -38,7 +38,7 @@ public class MealRestController extends AbstractMealController {
      * <li>by time for every date</li>
      * </ol>
      */
-    public List<MealTo> getBetween(@Nullable LocalDate startDate, @Nullable LocalTime startTime,
+    public List<MealTo> getBetweenMeals(@Nullable LocalDate startDate, @Nullable LocalTime startTime,
                                    @Nullable LocalDate endDate, @Nullable LocalTime endTime) {
         return super.getBetween(startDate, startTime, endDate, endTime);
     }
