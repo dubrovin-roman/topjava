@@ -1,17 +1,16 @@
 package ru.javawebinar.topjava.web.meal;
 
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import ru.javawebinar.topjava.formatter.CustomDateTimeFormat;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -56,12 +55,18 @@ public class MealRestController extends AbstractMealController {
     }
 
     @GetMapping("/filter")
-    public List<MealTo> getBetween(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
-                                   @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
-        LocalDate startDate = start.toLocalDate();
-        LocalTime startTime = start.toLocalTime();
-        LocalDate endDate = end.toLocalDate();
-        LocalTime endTime = end.toLocalTime();
+    public List<MealTo> getBetween(@RequestParam(required = false)
+                                        @CustomDateTimeFormat(type = CustomDateTimeFormat.Type.DATE)
+                                        LocalDate startDate,
+                                   @RequestParam(required = false)
+                                        @CustomDateTimeFormat(type = CustomDateTimeFormat.Type.TIME)
+                                        LocalTime startTime,
+                                   @RequestParam(required = false)
+                                        @CustomDateTimeFormat(type = CustomDateTimeFormat.Type.DATE)
+                                        LocalDate endDate,
+                                   @RequestParam(required = false)
+                                        @CustomDateTimeFormat(type = CustomDateTimeFormat.Type.TIME)
+                                        LocalTime endTime) {
         return super.getBetween(startDate, startTime, endDate, endTime);
     }
 }

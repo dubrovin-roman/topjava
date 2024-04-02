@@ -37,6 +37,10 @@ public class MealTestData {
         return MealsUtil.getTos(meals, SecurityUtil.authUserCaloriesPerDay());
     }
 
+    public static List<MealTo> getFilterMealsTo() {
+        return MealsUtil.getTos(List.of(meal3, meal2), SecurityUtil.authUserCaloriesPerDay());
+    }
+
     public static Meal getNew() {
         return new Meal(null, of(2020, Month.FEBRUARY, 1, 18, 0), "Созданный ужин", 300);
     }
