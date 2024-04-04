@@ -8,9 +8,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 public class CustomTimeFormatter implements Formatter<LocalTime> {
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
     @Override
     public LocalTime parse(String text, Locale locale) throws ParseException {
-        return LocalTime.parse(text, DateTimeFormatter.ofPattern("HH:mm:ss"));
+        return LocalTime.parse(text, FORMATTER);
     }
 
     @Override

@@ -36,6 +36,6 @@ public class CustomDateTimeFormatAnnotationFormatterFactory implements Annotatio
                 return new CustomTimeFormatter();
             }
         }
-        return null;
+        throw new IllegalArgumentException("Only LocalDate or LocalTime");
     }
 }
