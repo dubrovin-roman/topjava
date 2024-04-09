@@ -45,3 +45,11 @@ $(function () {
         })
     );
 });
+
+function enable(checkbox) {
+    let urlGet = ctx.ajaxUrl + $(checkbox).closest('tr').attr("id") + "/enable";
+    $.get(urlGet, function () {
+        updateTable();
+        successNoty("enable/disable");
+    })
+}

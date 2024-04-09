@@ -1,4 +1,5 @@
 const mealAjaxUrl = "profile/meals/";
+let filterForm;
 
 const ctx = {
     ajaxUrl: mealAjaxUrl
@@ -36,4 +37,20 @@ $(function () {
             ]
         })
     );
+    filterForm = $("#filterForm");
 });
+
+function filterMeals() {
+    $.ajax({
+        type: "POST",
+        url: ctx.ajaxUrl + "filter",
+        data: filterForm.serialize()
+    }).done(function (data) {
+        ctx.datatableApi.clear().rows.add(data).draw();
+    })
+}
+
+function clearFilter() {
+    filterForm.find(":input").val("");
+    updateTable();
+}
