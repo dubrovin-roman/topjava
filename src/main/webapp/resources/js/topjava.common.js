@@ -101,5 +101,5 @@ function failNoty(jqXHR) {
 }
 
 function formatDate(date) {
-    return date.replace('T', ' ').substr(0, 16);
+    return date.replace('T', ' ').substring(0, 16);
 }
