@@ -1,4 +1,8 @@
 const mealAjaxUrl = "profile/meals/";
+let startDate = $("#startDate");
+let endDate = $("#endDate");
+let startTime = $("#startTime");
+let endTime = $("#endTime");
 
 // https://stackoverflow.com/a/5064235/548473
 const ctx = {
@@ -65,13 +69,41 @@ $(function () {
         })
     );
     $.datetimepicker.setLocale(navigator.language.substring(0, 2));
-    $("#startDate, #endDate").datetimepicker({
+    startDate.datetimepicker({
         timepicker: false,
         format: "Y-m-d",
+        onShow: function (param) {
+            this.setOptions({
+                maxDate: endDate.val() ? endDate.val() : false
+            })
+        }
     });
-    $("#startTime, #endTime").datetimepicker({
+    endDate.datetimepicker({
+        timepicker: false,
+        format: "Y-m-d",
+        onShow: function (param) {
+            this.setOptions({
+                minDate: startDate.val() ? startDate.val() : false
+            })
+        }
+    });
+    startTime.datetimepicker({
         datepicker: false,
         format: "H:i",
+        onShow: function (param) {
+            this.setOptions({
+                maxTime: endTime.val() ? endTime.val() : false
+            })
+        }
+    });
+    endTime.datetimepicker({
+        datepicker: false,
+        format: "H:i",
+        onShow: function (param) {
+            this.setOptions({
+                minTime: startTime.val() ? startTime.val() : false
+            })
+        }
     });
     $("#dateTime").datetimepicker({
         format: "Y-m-d H:i",
