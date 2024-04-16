@@ -30,8 +30,8 @@ $(function () {
                 {
                     "data": "dateTime",
                     "render": function (date, type, row) {
-                        if (type === "display") {
-                            return date.substring(0, 10) + " " + date.substring(11);
+                        if (type === 'display') {
+                            return formatDate(date);
                         }
                         return date;
                     }
@@ -64,4 +64,16 @@ $(function () {
             }
         })
     );
+    $.datetimepicker.setLocale(navigator.language.substring(0, 2));
+    $("#startDate, #endDate").datetimepicker({
+        timepicker: false,
+        format: "Y-m-d",
+    });
+    $("#startTime, #endTime").datetimepicker({
+        datepicker: false,
+        format: "H:i",
+    });
+    $("#dateTime").datetimepicker({
+        format: "Y-m-d H:i",
+    });
 });
