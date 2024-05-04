@@ -43,7 +43,6 @@ public class MealUIController extends AbstractMealController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<String> createOrUpdate(@Valid Meal meal, BindingResult result) {
         if (result.hasErrors()) {
-            // TODO change to exception handler
             throw new IllegalRequestDataException(ValidationUtil.getErrorMessage(result));
         }
         if (meal.isNew()) {
