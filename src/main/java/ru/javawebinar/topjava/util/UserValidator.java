@@ -20,7 +20,6 @@ public class UserValidator implements Validator {
     private UserRepository userRepository;
     @Autowired
     private MessageSource messageSource;
-
     private Locale locale = Locale.getDefault();
 
     @Override
@@ -40,7 +39,9 @@ public class UserValidator implements Validator {
             } else {
                 if (Objects.equals(user.getId(), userFromDB.getId())) {return;}
             }
-            errors.rejectValue("email", "email.exists", messageSource.getMessage("error.email.exists", new Object[] {}, locale));
+            errors.rejectValue("email",
+                    "email.exists",
+                    messageSource.getMessage("error.email.exists", new Object[] {}, locale));
         }
     }
 
