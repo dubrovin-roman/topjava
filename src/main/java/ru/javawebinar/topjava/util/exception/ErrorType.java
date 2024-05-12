@@ -1,10 +1,10 @@
 package ru.javawebinar.topjava.util.exception;
 
 public enum ErrorType {
-    APP_ERROR ("Ошибка приложения"),
-    DATA_NOT_FOUND ("Данные не найдены"),
-    DATA_ERROR ("Ошибка данных"),
-    VALIDATION_ERROR ("Ошибка проверки данных");
+    APP_ERROR ("error.app"),
+    DATA_NOT_FOUND ("error.data.not.found"),
+    DATA_ERROR ("error.data"),
+    VALIDATION_ERROR ("error.validation");
 
     private final String typeMessage;
 

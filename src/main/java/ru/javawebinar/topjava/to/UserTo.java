@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.to;
 
 import org.hibernate.validator.constraints.Range;
+import ru.javawebinar.topjava.UserHasEmail;
 import ru.javawebinar.topjava.util.UsersUtil;
 
 import javax.validation.constraints.Email;
@@ -10,7 +11,7 @@ import javax.validation.constraints.Size;
 import java.io.Serial;
 import java.io.Serializable;
 
-public class UserTo extends BaseTo implements Serializable {
+public class UserTo extends BaseTo implements Serializable, UserHasEmail {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -58,10 +59,12 @@ public class UserTo extends BaseTo implements Serializable {
         this.name = name;
     }
 
+    @Override
     public String getEmail() {
         return email;
     }
 
+    @Override
     public void setEmail(String email) {
         this.email = email;
     }

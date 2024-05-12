@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.web.user;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -7,18 +8,26 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.topjava.model.User;
+import ru.javawebinar.topjava.util.UserValidator;
 import ru.javawebinar.topjava.util.ValidationUtil;
 import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping(value = AdminRestController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminRestController extends AbstractUserController {
-
     static final String REST_URL = "/rest/admin/users";
+
+    private final UserValidator userValidator;
+
+    @Autowired
+    public AdminRestController(UserValidator userValidator) {
+        this.userValidator = userValidator;
+    }
 
     @Override
     @GetMapping
@@ -33,7 +42,11 @@ public class AdminRestController extends AbstractUserController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<User> createWithLocation(@Valid @RequestBody User user, BindingResult result) {
+    public ResponseEntity<User> createWithLocation(@Valid @RequestBody User user,
+                                                   BindingResult result,
+                                                   Locale locale) throws IllegalRequestDataException {
+        userValidator.setLocale(locale);
+        userValidator.validate(user, result);
         if (result.hasErrors()) {
             throw new IllegalRequestDataException(ValidationUtil.getErrorMessage(result));
         }
@@ -56,7 +69,10 @@ public class AdminRestController extends AbstractUserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@Valid @RequestBody User user,
                        BindingResult result,
-                       @PathVariable int id) {
+                       @PathVariable int id,
+                       Locale locale) throws IllegalRequestDataException {
+        userValidator.setLocale(locale);
+        userValidator.validate(user, result);
         if (result.hasErrors()) {
             throw new IllegalRequestDataException(ValidationUtil.getErrorMessage(result));
         }
