@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.to.UserTo;
-import ru.javawebinar.topjava.util.UserValidator;
+import ru.javawebinar.topjava.util.ProfileUserValidator;
 import ru.javawebinar.topjava.util.ValidationUtil;
 import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 
@@ -24,11 +24,11 @@ import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
 public class ProfileRestController extends AbstractUserController {
     static final String REST_URL = "/rest/profile";
 
-    private final UserValidator userValidator;
+    private final ProfileUserValidator profileUserValidator;
 
     @Autowired
-    public ProfileRestController(UserValidator userValidator) {
-        this.userValidator = userValidator;
+    public ProfileRestController(ProfileUserValidator profileUserValidator) {
+        this.profileUserValidator = profileUserValidator;
     }
 
     @GetMapping
@@ -47,8 +47,8 @@ public class ProfileRestController extends AbstractUserController {
     public ResponseEntity<User> register(@Valid @RequestBody UserTo userTo,
                                          BindingResult result,
                                          Locale locale) throws IllegalRequestDataException {
-        userValidator.setLocale(locale);
-        userValidator.validate(userTo, result);
+        profileUserValidator.setLocale(locale);
+        profileUserValidator.validate(userTo, result);
         if (result.hasErrors()) {
             throw new IllegalRequestDataException(ValidationUtil.getErrorMessage(result));
         }
@@ -64,8 +64,8 @@ public class ProfileRestController extends AbstractUserController {
     public void update(@Valid @RequestBody UserTo userTo,
                        BindingResult result,
                        Locale locale) throws IllegalRequestDataException {
-        userValidator.setLocale(locale);
-        userValidator.validate(userTo, result);
+        profileUserValidator.setLocale(locale);
+        profileUserValidator.validate(userTo, result);
         if (result.hasErrors()) {
             throw new IllegalRequestDataException(ValidationUtil.getErrorMessage(result));
         }

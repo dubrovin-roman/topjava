@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.SessionStatus;
 import ru.javawebinar.topjava.to.UserTo;
-import ru.javawebinar.topjava.util.UserValidator;
+import ru.javawebinar.topjava.util.ProfileUserValidator;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
 import javax.validation.Valid;
@@ -18,11 +18,11 @@ import java.util.Locale;
 @Controller
 @RequestMapping("/profile")
 public class ProfileUIController extends AbstractUserController {
-    private final UserValidator userValidator;
+    private final ProfileUserValidator profileUserValidator;
 
     @Autowired
-    public ProfileUIController(UserValidator userValidator) {
-        this.userValidator = userValidator;
+    public ProfileUIController(ProfileUserValidator profileUserValidator) {
+        this.profileUserValidator = profileUserValidator;
     }
 
     @GetMapping
@@ -35,8 +35,8 @@ public class ProfileUIController extends AbstractUserController {
                                 BindingResult result,
                                 SessionStatus status,
                                 Locale locale) {
-        userValidator.setLocale(locale);
-        userValidator.validate(userTo, result);
+        profileUserValidator.setLocale(locale);
+        profileUserValidator.validate(userTo, result);
         if (result.hasErrors()) {
             return "profile";
         } else {
@@ -60,8 +60,8 @@ public class ProfileUIController extends AbstractUserController {
                                SessionStatus status,
                                ModelMap model,
                                Locale locale) {
-        userValidator.setLocale(locale);
-        userValidator.validate(userTo, result);
+        profileUserValidator.setLocale(locale);
+        profileUserValidator.validate(userTo, result);
         if (result.hasErrors()) {
             model.addAttribute("register", true);
             return "profile";

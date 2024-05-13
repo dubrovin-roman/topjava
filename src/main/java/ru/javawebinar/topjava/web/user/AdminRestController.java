@@ -8,7 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.util.UserValidator;
+import ru.javawebinar.topjava.util.AdminUserValidator;
 import ru.javawebinar.topjava.util.ValidationUtil;
 import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 
@@ -21,12 +21,11 @@ import java.util.Locale;
 @RequestMapping(value = AdminRestController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminRestController extends AbstractUserController {
     static final String REST_URL = "/rest/admin/users";
-
-    private final UserValidator userValidator;
+    private final AdminUserValidator adminUserValidator;
 
     @Autowired
-    public AdminRestController(UserValidator userValidator) {
-        this.userValidator = userValidator;
+    public AdminRestController(AdminUserValidator adminUserValidator) {
+        this.adminUserValidator = adminUserValidator;
     }
 
     @Override
@@ -45,8 +44,8 @@ public class AdminRestController extends AbstractUserController {
     public ResponseEntity<User> createWithLocation(@Valid @RequestBody User user,
                                                    BindingResult result,
                                                    Locale locale) throws IllegalRequestDataException {
-        userValidator.setLocale(locale);
-        userValidator.validate(user, result);
+        adminUserValidator.setLocale(locale);
+        adminUserValidator.validate(user, result);
         if (result.hasErrors()) {
             throw new IllegalRequestDataException(ValidationUtil.getErrorMessage(result));
         }
@@ -71,8 +70,8 @@ public class AdminRestController extends AbstractUserController {
                        BindingResult result,
                        @PathVariable int id,
                        Locale locale) throws IllegalRequestDataException {
-        userValidator.setLocale(locale);
-        userValidator.validate(user, result);
+        adminUserValidator.setLocale(locale);
+        adminUserValidator.validate(user, result);
         if (result.hasErrors()) {
             throw new IllegalRequestDataException(ValidationUtil.getErrorMessage(result));
         }

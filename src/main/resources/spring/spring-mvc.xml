@@ -9,7 +9,8 @@
        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
     <bean class="ru.javawebinar.topjava.web.json.JacksonObjectMapper" id="objectMapper" factory-method="getMapper"/>
-    <bean class="ru.javawebinar.topjava.util.UserValidator" id="userValidator" />
+    <bean class="ru.javawebinar.topjava.util.ProfileUserValidator" id="profileUserValidator" />
+    <bean class="ru.javawebinar.topjava.util.AdminUserValidator" id="adminUserValidator" />
     <bean class="ru.javawebinar.topjava.util.MealValidator" id="mealValidator" />
 
     <!-- serve static resources (*.html, ...) from src/main/webapp/ -->

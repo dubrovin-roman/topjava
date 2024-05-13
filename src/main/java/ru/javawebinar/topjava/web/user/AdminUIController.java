@@ -8,7 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.to.UserTo;
-import ru.javawebinar.topjava.util.UserValidator;
+import ru.javawebinar.topjava.util.AdminUserValidator;
 import ru.javawebinar.topjava.util.ValidationUtil;
 import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 
@@ -19,11 +19,11 @@ import java.util.Locale;
 @RestController
 @RequestMapping(value = "/admin/users", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminUIController extends AbstractUserController {
-    private final UserValidator userValidator;
+    private final AdminUserValidator adminUserValidator;
 
     @Autowired
-    public AdminUIController(UserValidator userValidator) {
-        this.userValidator = userValidator;
+    public AdminUIController(AdminUserValidator adminUserValidator) {
+        this.adminUserValidator = adminUserValidator;
     }
 
     @Override
@@ -47,9 +47,11 @@ public class AdminUIController extends AbstractUserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<String> createOrUpdate(@Valid UserTo userTo, BindingResult result, Locale locale) throws IllegalRequestDataException {
-        userValidator.setLocale(locale);
-        userValidator.validate(userTo, result);
+    public ResponseEntity<String> createOrUpdate(@Valid UserTo userTo,
+                                                 BindingResult result,
+                                                 Locale locale) throws IllegalRequestDataException {
+        adminUserValidator.setLocale(locale);
+        adminUserValidator.validate(userTo, result);
         if (result.hasErrors()) {
             throw new IllegalRequestDataException(ValidationUtil.getErrorMessage(result));
         }

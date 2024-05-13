@@ -10,6 +10,7 @@ import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -122,6 +123,19 @@ class AdminRestControllerTest extends AbstractControllerTest {
         newUser.setId(newId);
         USER_MATCHER.assertMatch(created, newUser);
         USER_MATCHER.assertMatch(userService.get(newId), newUser);
+    }
+
+    @Test
+    void createWithLocationEmailDuplication() throws Exception {
+        User newUser = getNew();
+        newUser.setEmail("admin@gmail.com");
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(admin))
+                .content(jsonWithPassword(newUser, newUser.getPassword())))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(content().string(containsString("User with this email already exists")));
     }
 
     @Test
