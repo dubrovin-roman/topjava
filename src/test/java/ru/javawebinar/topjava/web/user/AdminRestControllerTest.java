@@ -97,6 +97,19 @@ class AdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void updateWithEmailDuplication() throws Exception {
+        User updated = getUpdated();
+        updated.setEmail("admin@gmail.com");
+        perform(MockMvcRequestBuilders.put(REST_URL + USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(admin))
+                .content(jsonWithPassword(updated, updated.getPassword())))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(content().string(containsString("User with this email already exists")));
+    }
+
+    @Test
     void updateNotValid() throws Exception {
         User updated = getUpdated();
         updated.setEmail("updategmail.com");

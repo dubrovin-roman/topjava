@@ -5,13 +5,14 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import ru.javawebinar.topjava.AuthorizedUser;
 import ru.javawebinar.topjava.UserHasEmail;
+import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.util.Locale;
+import java.util.Objects;
 
 @Component
 public class AdminUserValidator implements Validator {
@@ -32,11 +33,15 @@ public class AdminUserValidator implements Validator {
         User userFromDB = userRepository.getByEmail(user.getEmail());
 
         if (userFromDB != null) {
-            AuthorizedUser authorizedUser = SecurityUtil.safeGet();
-            if (!user.isNew() && authorizedUser != null && SecurityUtil.authUserId() != userFromDB.getId()) {return;}
+            if (!user.isNew()) {
+                if ((isAdmin(userFromDB) && SecurityUtil.authUserId() == user.getId())
+                        || Objects.equals(user.getId(), userFromDB.getId())) {
+                    return;
+                }
+            }
             errors.rejectValue("email",
                     "email.exists",
-                    messageSource.getMessage("error.email.exists", new Object[] {}, locale));
+                    messageSource.getMessage("error.email.exists", new Object[]{}, locale));
         }
     }
 
@@ -46,5 +51,9 @@ public class AdminUserValidator implements Validator {
 
     public void setLocale(Locale locale) {
         this.locale = locale;
+    }
+
+    private boolean isAdmin(User user) {
+        return user.getRoles().contains(Role.ADMIN);
     }
 }
