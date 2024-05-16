@@ -14,12 +14,13 @@ import java.util.Locale;
 import java.util.Objects;
 
 @Component
-public class AdminUserValidator implements Validator {
+public class UserValidator implements Validator  {
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private MessageSource messageSource;
     private Locale locale = Locale.getDefault();
+    private String requestURI;
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -32,16 +33,30 @@ public class AdminUserValidator implements Validator {
         User userFromDB = userRepository.getByEmail(user.getEmail());
 
         if (userFromDB != null) {
-            if (!user.isNew()) {
-                if (SecurityUtil.authUserId() == user.getId()
-                        || Objects.equals(user.getId(), userFromDB.getId())) {
+            if (requestURI.contains("admin")) {
+                if (!user.isNew()) {
+                    if (SecurityUtil.authUserId() == user.getId()
+                            || Objects.equals(user.getId(), userFromDB.getId())) {
+                        return;
+                    }
+                }
+            } else if (requestURI.contains("profile")) {
+                if (SecurityUtil.safeGet() != null && SecurityUtil.get().getUserTo().getEmail().equals(user.getEmail())) {
                     return;
                 }
+            } else {
+                throw new UnsupportedOperationException("Unsupported request URI by UserValidator: " + requestURI);
             }
-            errors.rejectValue("email",
-                    "email.exists",
-                    messageSource.getMessage("error.email.exists", new Object[]{}, locale));
+            errors.rejectValue("email", "error.email.exists", "User with this email already exists");
         }
+    }
+
+    public String getRequestURI() {
+        return requestURI;
+    }
+
+    public void setRequestURI(String requestURI) {
+        this.requestURI = requestURI;
     }
 
     public Locale getLocale() {

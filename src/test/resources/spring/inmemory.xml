@@ -6,8 +6,7 @@
     <context:component-scan base-package="ru.javawebinar.topjava.**.repository.inmemory"/>
     <context:component-scan base-package="ru.javawebinar.**.service"/>
     <context:component-scan base-package="ru.javawebinar.topjava.**.web"/>
-    <bean class="ru.javawebinar.topjava.util.ProfileUserValidator" id="profileUserValidator" />
-    <bean class="ru.javawebinar.topjava.util.AdminUserValidator" id="adminUserValidator" />
+    <bean class="ru.javawebinar.topjava.util.UserValidator" id="userValidator"/>
     <bean class="ru.javawebinar.topjava.util.MealValidator" id="mealValidator" />
     <bean class="org.springframework.security.crypto.password.NoOpPasswordEncoder" id="passwordEncoder"/>
 </beans>

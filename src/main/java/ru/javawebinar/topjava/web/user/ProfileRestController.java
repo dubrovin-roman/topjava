@@ -1,25 +1,15 @@
 package ru.javawebinar.topjava.web.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.to.UserTo;
-import ru.javawebinar.topjava.util.ProfileUserValidator;
-import ru.javawebinar.topjava.util.ValidationUtil;
-import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.Locale;
-import java.util.Optional;
 
 import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
 
@@ -27,21 +17,6 @@ import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
 @RequestMapping(value = ProfileRestController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProfileRestController extends AbstractUserController {
     static final String REST_URL = "/rest/profile";
-
-    private final ProfileUserValidator profileUserValidator;
-
-    @Autowired
-    public ProfileRestController(ProfileUserValidator profileUserValidator) {
-        this.profileUserValidator = profileUserValidator;
-    }
-
-    @InitBinder
-    protected void initBinder(HttpServletRequest request, WebDataBinder binder) {
-        profileUserValidator.setLocale(request.getLocale());
-        Optional.ofNullable(binder.getTarget())
-                .filter((notNullBinder) -> UserTo.class.equals(notNullBinder.getClass()))
-                .ifPresent(o -> binder.addValidators(profileUserValidator));
-    }
 
     @GetMapping
     public User get() {
@@ -56,15 +31,7 @@ public class ProfileRestController extends AbstractUserController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<User> register(@Valid @RequestBody UserTo userTo,
-                                         BindingResult result,
-                                         Locale locale) throws IllegalRequestDataException {
-//        profileUserValidator.setLocale(locale);
-//        profileUserValidator.validate(userTo, result);
-        if (result.hasErrors()) {
-            throw new IllegalRequestDataException(ValidationUtil.getErrorMessage(result));
-        }
-
+    public ResponseEntity<User> register(@Valid @RequestBody UserTo userTo) {
         User created = super.create(userTo);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL).build().toUri();
@@ -73,14 +40,7 @@ public class ProfileRestController extends AbstractUserController {
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@Validated @RequestBody UserTo userTo,
-                       BindingResult result,
-                       Locale locale) throws IllegalRequestDataException {
-//        profileUserValidator.setLocale(locale);
-//        profileUserValidator.validate(userTo, result);
-        if (result.hasErrors()) {
-            throw new IllegalRequestDataException(ValidationUtil.getErrorMessage(result));
-        }
+    public void update(@Valid @RequestBody UserTo userTo) {
         super.update(userTo, authUserId());
     }
 
