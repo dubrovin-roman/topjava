@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.topjava.model.User;
@@ -13,9 +15,11 @@ import ru.javawebinar.topjava.util.ProfileUserValidator;
 import ru.javawebinar.topjava.util.ValidationUtil;
 import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.Locale;
+import java.util.Optional;
 
 import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
 
@@ -29,6 +33,14 @@ public class ProfileRestController extends AbstractUserController {
     @Autowired
     public ProfileRestController(ProfileUserValidator profileUserValidator) {
         this.profileUserValidator = profileUserValidator;
+    }
+
+    @InitBinder
+    protected void initBinder(HttpServletRequest request, WebDataBinder binder) {
+        profileUserValidator.setLocale(request.getLocale());
+        Optional.ofNullable(binder.getTarget())
+                .filter((notNullBinder) -> UserTo.class.equals(notNullBinder.getClass()))
+                .ifPresent(o -> binder.addValidators(profileUserValidator));
     }
 
     @GetMapping
@@ -47,8 +59,8 @@ public class ProfileRestController extends AbstractUserController {
     public ResponseEntity<User> register(@Valid @RequestBody UserTo userTo,
                                          BindingResult result,
                                          Locale locale) throws IllegalRequestDataException {
-        profileUserValidator.setLocale(locale);
-        profileUserValidator.validate(userTo, result);
+//        profileUserValidator.setLocale(locale);
+//        profileUserValidator.validate(userTo, result);
         if (result.hasErrors()) {
             throw new IllegalRequestDataException(ValidationUtil.getErrorMessage(result));
         }
@@ -61,11 +73,11 @@ public class ProfileRestController extends AbstractUserController {
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@Valid @RequestBody UserTo userTo,
+    public void update(@Validated @RequestBody UserTo userTo,
                        BindingResult result,
                        Locale locale) throws IllegalRequestDataException {
-        profileUserValidator.setLocale(locale);
-        profileUserValidator.validate(userTo, result);
+//        profileUserValidator.setLocale(locale);
+//        profileUserValidator.validate(userTo, result);
         if (result.hasErrors()) {
             throw new IllegalRequestDataException(ValidationUtil.getErrorMessage(result));
         }

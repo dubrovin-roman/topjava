@@ -5,7 +5,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import ru.javawebinar.topjava.AuthorizedUser;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 import ru.javawebinar.topjava.to.UserTo;
@@ -32,13 +31,12 @@ public class ProfileUserValidator implements Validator {
         User userFromDB = userRepository.getByEmail(user.getEmail());
 
         if (userFromDB != null) {
-            AuthorizedUser authorizedUser = SecurityUtil.safeGet();
-            if (authorizedUser != null && SecurityUtil.get().getUserTo().getEmail().equals(user.getEmail())) {
+            if (SecurityUtil.safeGet() != null && SecurityUtil.get().getUserTo().getEmail().equals(user.getEmail())) {
                 return;
             }
             errors.rejectValue("email",
                     "email.exists",
-                    messageSource.getMessage("error.email.exists", new Object[] {}, locale));
+                    messageSource.getMessage("error.email.exists", new Object[]{}, locale));
         }
     }
 

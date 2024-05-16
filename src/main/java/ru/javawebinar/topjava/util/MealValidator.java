@@ -29,9 +29,8 @@ public class MealValidator implements Validator {
     public void validate(Object target, Errors errors) {
         Meal mealTarget = (Meal) target;
         int userId = SecurityUtil.authUserId();
-        List<Meal> mealList = repository.getAll(userId);
-        boolean isPresent = mealList.stream().anyMatch(meal -> meal.getDateTime().equals(mealTarget.getDateTime()));
-        if(isPresent) {
+        List<Meal> mealList = repository.getBetweenHalfOpen(mealTarget.getDateTime(), mealTarget.getDateTime().plusMinutes(1), userId);
+        if (!mealList.isEmpty()) {
             errors.rejectValue("dateTime",
                     "dateTime.exists",
                     messageSource.getMessage("error.meal.dateTime.exists", new Object[] {}, locale));

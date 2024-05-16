@@ -5,8 +5,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import ru.javawebinar.topjava.UserHasEmail;
-import ru.javawebinar.topjava.model.Role;
+import ru.javawebinar.topjava.HasEmail;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 import ru.javawebinar.topjava.web.SecurityUtil;
@@ -24,17 +23,17 @@ public class AdminUserValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return UserHasEmail.class.isAssignableFrom(clazz);
+        return HasEmail.class.isAssignableFrom(clazz);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
-        UserHasEmail user = (UserHasEmail) target;
+        HasEmail user = (HasEmail) target;
         User userFromDB = userRepository.getByEmail(user.getEmail());
 
         if (userFromDB != null) {
             if (!user.isNew()) {
-                if ((isAdmin(userFromDB) && SecurityUtil.authUserId() == user.getId())
+                if (SecurityUtil.authUserId() == user.getId()
                         || Objects.equals(user.getId(), userFromDB.getId())) {
                     return;
                 }
@@ -51,9 +50,5 @@ public class AdminUserValidator implements Validator {
 
     public void setLocale(Locale locale) {
         this.locale = locale;
-    }
-
-    private boolean isAdmin(User user) {
-        return user.getRoles().contains(Role.ADMIN);
     }
 }

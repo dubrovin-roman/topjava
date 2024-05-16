@@ -1,6 +1,6 @@
 package ru.javawebinar.topjava;
 
-public interface UserHasEmail extends HasId {
+public interface HasEmail extends HasId {
     String getEmail();
     void setEmail(String email);
 }
