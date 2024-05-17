@@ -99,7 +99,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
     @Test
     void updateWithEmailDuplication() throws Exception {
         User updated = getUpdated();
-        updated.setEmail("admin@gmail.com");
+        updated.setEmail(admin.getEmail());
         perform(MockMvcRequestBuilders.put(REST_URL + USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(admin))
@@ -141,7 +141,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
     @Test
     void createWithLocationEmailDuplication() throws Exception {
         User newUser = getNew();
-        newUser.setEmail("admin@gmail.com");
+        newUser.setEmail(admin.getEmail());
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(admin))

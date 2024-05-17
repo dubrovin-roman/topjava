@@ -123,18 +123,10 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void createWithLocationDateTimeDuplication() throws Exception {
-        Meal newMeal = getNew();
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(user))
-                .content(JsonUtil.writeValue(newMeal)))
-                .andExpect(status().isCreated());
-
-        Meal newMealWithDateTimeDuplication = getNew();
-        perform(MockMvcRequestBuilders.post(REST_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .with(userHttpBasic(user))
-                .content(JsonUtil.writeValue(newMealWithDateTimeDuplication)))
+                .content(JsonUtil.writeValue(meal1)))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().string(containsString("You already have meal with this date/time")));

@@ -10,6 +10,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +25,8 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Locale;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static ru.javawebinar.topjava.util.exception.ErrorType.*;
 
@@ -71,12 +74,18 @@ public class ExceptionInfoHandler {
         }
 
         String errorMessage = e instanceof BindException
-                ? ValidationUtil.getErrorMessage(((BindException) e).getBindingResult())
+                ? getErrorMessage(((BindException) e).getBindingResult(), locale)
                 : e.getMessage();
 
         return new ErrorInfo(req.getRequestURL(),
                 errorType,
                 messageSource.getMessage(errorType.getTypeMessage(), new Object[]{}, locale),
                 errorMessage.split("<br>"));
+    }
+
+    private String getErrorMessage(BindingResult result, Locale locale) {
+        return result.getFieldErrors().stream()
+                .map(fe -> String.format("[%s] %s", fe.getField(), messageSource.getMessage(Objects.requireNonNull(fe.getCode()), new Object[]{}, locale)))
+                .collect(Collectors.joining("<br>"));
     }
 }

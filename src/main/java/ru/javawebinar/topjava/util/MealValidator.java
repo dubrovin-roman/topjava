@@ -1,7 +1,6 @@
 package ru.javawebinar.topjava.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -10,15 +9,11 @@ import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.util.List;
-import java.util.Locale;
 
 @Component
 public class MealValidator implements Validator {
     @Autowired
     private MealRepository repository;
-    @Autowired
-    private MessageSource messageSource;
-    private Locale locale = Locale.getDefault();
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -28,20 +23,13 @@ public class MealValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         Meal mealTarget = (Meal) target;
+        if (mealTarget.getDateTime() == null) {
+            return;
+        }
         int userId = SecurityUtil.authUserId();
         List<Meal> mealList = repository.getBetweenHalfOpen(mealTarget.getDateTime(), mealTarget.getDateTime().plusMinutes(1), userId);
         if (!mealList.isEmpty()) {
-            errors.rejectValue("dateTime",
-                    "dateTime.exists",
-                    messageSource.getMessage("error.meal.dateTime.exists", new Object[] {}, locale));
+            errors.rejectValue("dateTime", "error.meal.dateTime.exists");
         }
-    }
-
-    public Locale getLocale() {
-        return locale;
-    }
-
-    public void setLocale(Locale locale) {
-        this.locale = locale;
     }
 }

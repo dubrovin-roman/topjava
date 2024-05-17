@@ -31,7 +31,6 @@ public abstract class AbstractUserController {
     @InitBinder
     protected void initBinder(HttpServletRequest request, WebDataBinder binder) {
         userValidator.setRequestURI(request.getRequestURI());
-        userValidator.setLocale(request.getLocale());
         Optional.ofNullable(binder.getTarget())
                 .filter((notNullBinder) -> HasEmail.class.isAssignableFrom(notNullBinder.getClass()))
                 .ifPresent(o -> binder.addValidators(userValidator));

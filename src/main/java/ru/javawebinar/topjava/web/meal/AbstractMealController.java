@@ -13,7 +13,6 @@ import ru.javawebinar.topjava.util.MealValidator;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -32,8 +31,7 @@ public abstract class AbstractMealController {
     private MealValidator mealValidator;
 
     @InitBinder
-    protected void initBinder(HttpServletRequest request, WebDataBinder binder) {
-        mealValidator.setLocale(request.getLocale());
+    protected void initBinder(WebDataBinder binder) {
         Optional.ofNullable(binder.getTarget())
                 .filter((notNullBinder) -> Meal.class.equals(notNullBinder.getClass()))
                 .ifPresent(o -> binder.addValidators(mealValidator));
@@ -78,7 +76,7 @@ public abstract class AbstractMealController {
      * </ol>
      */
     public List<MealTo> getBetween(@Nullable LocalDate startDate, @Nullable LocalTime startTime,
-                                            @Nullable LocalDate endDate, @Nullable LocalTime endTime) {
+                                   @Nullable LocalDate endDate, @Nullable LocalTime endTime) {
         int userId = SecurityUtil.authUserId();
         log.info("getBetween dates({} - {}) time({} - {}) for user {}", startDate, endDate, startTime, endTime, userId);
 
