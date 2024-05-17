@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -85,7 +86,15 @@ public class ExceptionInfoHandler {
 
     private String getErrorMessage(BindingResult result, Locale locale) {
         return result.getFieldErrors().stream()
-                .map(fe -> String.format("[%s] %s", fe.getField(), messageSource.getMessage(Objects.requireNonNull(fe.getCode()), new Object[]{}, locale)))
+                .map(fe -> {
+                    String message;
+                    try {
+                        message = messageSource.getMessage(Objects.requireNonNull(fe.getCode()), new Object[]{}, locale);
+                    } catch (NoSuchMessageException e) {
+                        message = fe.getDefaultMessage();
+                    }
+                    return String.format("[%s] %s", fe.getField(), message);
+                })
                 .collect(Collectors.joining("<br>"));
     }
 }
