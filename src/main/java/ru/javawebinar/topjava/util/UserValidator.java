@@ -9,13 +9,15 @@ import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 
 @Component
 public class UserValidator implements Validator {
     @Autowired
     private UserRepository userRepository;
-    private String requestURI;
+    @Autowired
+    private HttpServletRequest request;
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -26,6 +28,7 @@ public class UserValidator implements Validator {
     public void validate(Object target, Errors errors) {
         HasEmail user = (HasEmail) target;
         User userFromDB = userRepository.getByEmail(user.getEmail());
+        String requestURI = request.getRequestURI();
 
         if (userFromDB != null) {
             if (requestURI.contains("admin")) {
@@ -44,13 +47,5 @@ public class UserValidator implements Validator {
             }
             errors.rejectValue("email", "error.email.exists");
         }
-    }
-
-    public String getRequestURI() {
-        return requestURI;
-    }
-
-    public void setRequestURI(String requestURI) {
-        this.requestURI = requestURI;
     }
 }

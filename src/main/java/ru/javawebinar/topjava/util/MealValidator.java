@@ -29,6 +29,9 @@ public class MealValidator implements Validator {
         int userId = SecurityUtil.authUserId();
         List<Meal> mealList = repository.getBetweenHalfOpen(mealTarget.getDateTime(), mealTarget.getDateTime().plusMinutes(1), userId);
         if (!mealList.isEmpty()) {
+            if (!mealTarget.isNew() && mealTarget.getId().equals(mealList.getFirst().getId())) {
+                return;
+            }
             errors.rejectValue("dateTime", "error.meal.dateTime.exists");
         }
     }

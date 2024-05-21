@@ -12,7 +12,6 @@ import ru.javawebinar.topjava.to.UserTo;
 import ru.javawebinar.topjava.util.UserValidator;
 import ru.javawebinar.topjava.util.UsersUtil;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,8 +28,7 @@ public abstract class AbstractUserController {
     private UserValidator userValidator;
 
     @InitBinder
-    protected void initBinder(HttpServletRequest request, WebDataBinder binder) {
-        userValidator.setRequestURI(request.getRequestURI());
+    protected void initBinder(WebDataBinder binder) {
         Optional.ofNullable(binder.getTarget())
                 .filter((notNullBinder) -> HasEmail.class.isAssignableFrom(notNullBinder.getClass()))
                 .ifPresent(o -> binder.addValidators(userValidator));
