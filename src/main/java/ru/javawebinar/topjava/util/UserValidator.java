@@ -33,7 +33,7 @@ public class UserValidator implements Validator {
         if (userFromDB != null) {
             if (requestURI.contains("admin")) {
                 if (!user.isNew()) {
-                    if (SecurityUtil.authUserId() == user.getId()
+                    if ((SecurityUtil.authUserId() == user.getId() && !Objects.equals(user.getId(), userFromDB.getId()))
                             || Objects.equals(user.getId(), userFromDB.getId())) {
                         return;
                     }

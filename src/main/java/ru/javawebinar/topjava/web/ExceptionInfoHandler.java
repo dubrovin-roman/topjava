@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.context.NoSuchMessageException;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -55,7 +55,12 @@ public class ExceptionInfoHandler {
     @ExceptionHandler({IllegalRequestDataException.class, MethodArgumentTypeMismatchException.class,
             HttpMessageNotReadableException.class, BindException.class})
     public ErrorInfo validationError(HttpServletRequest req, Exception e) {
-        return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR);
+        ErrorInfo errorInfo = logAndGetErrorInfo(req, e, false, VALIDATION_ERROR);
+        if (e instanceof BindException) {
+            errorInfo.setDetails(getErrorMessage(((BindException) e).getBindingResult(),
+                    RequestContextUtils.getLocale(req)).split("<br>"));
+        }
+        return errorInfo;
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -74,27 +79,20 @@ public class ExceptionInfoHandler {
             log.warn("{} at request  {}: {}", errorType, req.getRequestURL(), rootCause.toString());
         }
 
-        String errorMessage = e instanceof BindException
-                ? getErrorMessage(((BindException) e).getBindingResult(), locale)
-                : e.getMessage();
-
         return new ErrorInfo(req.getRequestURL(),
                 errorType,
                 messageSource.getMessage(errorType.getTypeMessage(), new Object[]{}, locale),
-                errorMessage.split("<br>"));
+                new String[]{e.getMessage()});
     }
 
     private String getErrorMessage(BindingResult result, Locale locale) {
+        MessageSourceAccessor messageSourceAccessor = new MessageSourceAccessor(messageSource, locale);
         return result.getFieldErrors().stream()
-                .map(fe -> {
-                    String message;
-                    try {
-                        message = messageSource.getMessage(Objects.requireNonNull(fe.getCode()), new Object[]{}, locale);
-                    } catch (NoSuchMessageException e) {
-                        message = fe.getDefaultMessage();
-                    }
-                    return String.format("[%s] %s", fe.getField(), message);
-                })
+                .map(fe -> String.format("[%s] %s",
+                        fe.getField(),
+                        messageSourceAccessor.getMessage(Objects.requireNonNull(fe.getCode()),
+                                new Object[]{},
+                                fe.getDefaultMessage())))
                 .collect(Collectors.joining("<br>"));
     }
 }
