@@ -27,7 +27,6 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static ru.javawebinar.topjava.util.exception.ErrorType.*;
 
@@ -37,6 +36,8 @@ public class ExceptionInfoHandler {
     private static final Logger log = LoggerFactory.getLogger(ExceptionInfoHandler.class);
     @Autowired
     private MessageSource messageSource;
+    @Autowired
+    private MessageSourceAccessor messageSourceAccessor;
 
     //  http://stackoverflow.com/a/22358422/548473
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
@@ -57,8 +58,7 @@ public class ExceptionInfoHandler {
     public ErrorInfo validationError(HttpServletRequest req, Exception e) {
         ErrorInfo errorInfo = logAndGetErrorInfo(req, e, false, VALIDATION_ERROR);
         if (e instanceof BindException) {
-            errorInfo.setDetails(getErrorMessage(((BindException) e).getBindingResult(),
-                    RequestContextUtils.getLocale(req)).split("<br>"));
+            errorInfo.setDetails(getErrorMessage(((BindException) e).getBindingResult()));
         }
         return errorInfo;
     }
@@ -85,14 +85,13 @@ public class ExceptionInfoHandler {
                 new String[]{e.getMessage()});
     }
 
-    private String getErrorMessage(BindingResult result, Locale locale) {
-        MessageSourceAccessor messageSourceAccessor = new MessageSourceAccessor(messageSource, locale);
+    private String[] getErrorMessage(BindingResult result) {
         return result.getFieldErrors().stream()
                 .map(fe -> String.format("[%s] %s",
                         fe.getField(),
                         messageSourceAccessor.getMessage(Objects.requireNonNull(fe.getCode()),
                                 new Object[]{},
                                 fe.getDefaultMessage())))
-                .collect(Collectors.joining("<br>"));
+                .toArray(String[]::new);
     }
 }
